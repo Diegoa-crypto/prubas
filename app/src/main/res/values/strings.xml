@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Marche</string>
+    <string name="inicio">Inicio de sesion</string>
+    <string name="registro">Registrar usuario</string>
+    <string name="correo">Correo electronico</string>
+    <string name="contrsena">Contraseña</string>
+    <string name="nombre">Nombre</string>
+    <string name="telefono">Telefono</string>
+    <string name="resgistrar">Registrar</string>
+    <string name="regreso">Ya tengo cuenta</string>
+    <string name="salir">salir</string>
+    <string name="hola">hola</string>
+    <string name="olvidaste">Olvidaste tu contraseña</string>
+    <string name="texto_instrucciones">Marche es una plataforma para la comercializacion de productos saludables ...</string>
+    <string name="texto_instrucciones_2">Desde aqui, encontraras la mejor opcion de productos 100% naturales ...</string>
+    <string name="texto_instrucciones_3">Desde la ciudad hasta tu mesa ...</string>
+    <string name="texto_instrucciones_4">Esta plataforma te pone en contacto con vecinos que producen alimentos de muy buena calidad ...</string>
+    <string name="title_activity_instrucciones">InstruccionesActivity</string>
+    <string name="tab_text_1">Tab 1</string>
+    <string name="tab_text_2">Tab 2</string>
+    <string name="tab_text_3">Tab 3</string>
+    <string name="tab_text_4">Tab 4</string>
+</resources>

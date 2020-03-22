@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1086857898245",
+    "firebase_url": "https://diana-4ad03.firebaseio.com",
+    "project_id": "diana-4ad03",
+    "storage_bucket": "diana-4ad03.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1086857898245:android:199dccaa8e611bf779af6c",
+        "android_client_info": {
+          "package_name": "com.Marche"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1086857898245-l6h9hgehoamechoemqnb8h3i9e1cfjql.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCGP7ZQcAjV9ZuYfyQGiBa7Tbdp6wKuorE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1086857898245-l6h9hgehoamechoemqnb8h3i9e1cfjql.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
