@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
                         if (task.isSuccessful()){
                             Toast.makeText(MainActivity.this,"Inicio exitoso", Toast.LENGTH_SHORT).show();
                             startActivity(new Intent(getApplicationContext(), Menu.class));
+                            finish();
                         }else{
                             Toast.makeText(MainActivity.this,"Error¡ "+ task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                             //progressBar.setVisibility(View.GONE);
@@ -142,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
         currentUser = fAuth.getCurrentUser();
         if(currentUser != null){
             startActivity((new Intent(getApplicationContext(), Menu.class)));
+            finish();
         }
     }
 }
