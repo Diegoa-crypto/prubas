@@ -9,4 +9,7 @@
     <color name="color3">#FF564D</color>
     <color name="color4">#DA8D6E</color>
     <color name="colorBlancoTransparente">#cccccc</color>
+    <color name="colorGris">#9B9B9B</color>
+    <color name="colorProfile">#3B4041</color>
+    <color name="colorProfil">#D7D7D7</color>
 </resources>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/bottom_shet"
+    android:orientation="vertical"
+    android:background="@color/cardview_light_background"
+    android:padding="16dp"
+    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+    android:layout_width="match_parent"
+    app:behavior_hideable="true"
+    app:behavior_peekHeight="56dp"
+
+
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center_vertical"
+        android:weightSum="3">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_weight="2"
+            android:text="@string/Contactar"
+            android:textColor="@color/black"
+            android:textSize="20dp"
+            android:textStyle="bold"></TextView>
+    </LinearLayout>
+    <Button
+        android:id="@+id/mensaje_user"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/Enviar_mensaje"
+        android:layout_marginLeft="45dp"
+        android:layout_marginRight="45dp"
+        android:padding="4dp"
+        android:textSize="18sp"
+        android:textAllCaps="false"
+        android:textColor="@color/black"
+        android:background="@drawable/bt_mensaje"/>
+    <Button
+        android:id="@+id/llamar_user"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/Llamar"
+        android:layout_marginLeft="45dp"
+        android:layout_marginRight="45dp"
+        android:padding="4dp"
+        android:textSize="18sp"
+        android:layout_marginTop="10dp"
+        android:textAllCaps="false"
+        android:layout_below="@+id/mensaje_user"
+        android:textColor="@color/black"
+        android:background="@drawable/bt_2"/>
+</LinearLayout>

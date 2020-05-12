@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorProfile"
+    tools:context=".ProfileActivity">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/my_profile_pic_my"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="50dp"
+            android:src="@drawable/profile"/>
+        <TextView
+            android:id="@+id/my_profile_full_name_my"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/user_name"
+            android:layout_below="@+id/my_profile_pic_my"
+            android:layout_marginTop="10dp"
+            android:textAlignment="center"
+            android:textAllCaps="true"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
+        <TextView
+            android:id="@+id/date_user_profile_my"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/Desde"
+            android:layout_below="@+id/my_profile_full_name_my"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="18sp"/>
+        <TextView
+            android:id="@+id/correo_user_profile_my"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/correo"
+            android:layout_below="@+id/date_user_profile_my"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="18sp"/>
+        <TextView
+            android:id="@+id/user_status_my"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/mi_alimento"
+            android:layout_below="@+id/correo_user_profile_my"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/colorPrimary"
+            android:textSize="22sp"/>
+
+
+
+    </RelativeLayout>
+
+</RelativeLayout>

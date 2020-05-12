@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,9 +22,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import android.util.Log;
@@ -36,6 +40,7 @@ public class login extends AppCompatActivity {
    private Button registrar, atras;
    private FirebaseAuth fAuth;
    private FirebaseFirestore fStore;
+   private String saveCurrentDate;
    private String userID;
 
     @Override
@@ -50,13 +55,20 @@ public class login extends AppCompatActivity {
         contrasena = (EditText) findViewById(R.id.txt_contrasena);
         telefono = (EditText) findViewById(R.id.txt_telefono);
 
+        Calendar calendar = Calendar.getInstance();
+
+        SimpleDateFormat currentDate = new SimpleDateFormat("MMMM yyyy");
+        saveCurrentDate = currentDate.format(calendar.getTime());
+
         fAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
 
-        //if(fAuth.getCurrentUser() != null){
-          //  startActivity((new Intent(getApplicationContext(),Menu.class)));
-          //  finish();
-       // }
+        if(fAuth.getCurrentUser() != null){
+            startActivity((new Intent(getApplicationContext(), MenuActivity.class)));
+            finish();
+        }
+
+
 
         registrar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,6 +103,7 @@ public class login extends AppCompatActivity {
                             userID = fAuth.getCurrentUser().getUid();
                             DocumentReference documentReference = fStore.collection("Usuarios").document(userID);
                             Map<String, Object> user = new HashMap<>();
+                            user.put("date",saveCurrentDate);
                             user.put("fName", bnombre);
                             user.put("fTelefono", btelefono);
                             user.put("email", bea);
@@ -100,7 +113,15 @@ public class login extends AppCompatActivity {
                                     Log.d("TAG", "onSuccess: Usuario creado con el ID "+userID);
                                 }
                             });
-                            startActivity(new Intent(getApplicationContext(), Menu.class));
+                            startActivity(new Intent(getApplicationContext(), MenuActivity.class));
+                            FirebaseUser usr = fAuth.getCurrentUser();
+                            UserProfileChangeRequest request = new UserProfileChangeRequest.Builder()
+                                    .setDisplayName(bnombre)
+                                    .build();
+                            usr.updateProfile(request);
+                            startActivity(new Intent(getApplicationContext(), MenuActivity.class));
+
+
 
                         }else{
                             Toast.makeText(login.this,"Error¡ "+ task.getException().getMessage(), Toast.LENGTH_SHORT).show();

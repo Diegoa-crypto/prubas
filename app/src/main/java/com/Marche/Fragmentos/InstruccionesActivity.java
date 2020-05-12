@@ -52,7 +52,7 @@ Terccer_dospersonas.OnFragmentInteractionListener, Cuarto_signo.OnFragmentIntera
             linearPuntos.addView(puntosSlide[i]);
 
         }
-        if(puntosSlide.length<0)
+        if(puntosSlide.length>0)
             puntosSlide [pos].setTextColor(getResources().getColor(R.color.colorMarche));
     }
 

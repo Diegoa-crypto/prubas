@@ -8,6 +8,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,6 +25,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import dmax.dialog.SpotsDialog;
+
 public class MainActivity extends AppCompatActivity {
    EditText email;
    EditText contrasena;
@@ -30,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
    Button bregis;
    FirebaseAuth fAuth;
    TextView forgotTextLink;
+   android.app.AlertDialog mDialog;
    private FirebaseUser currentUser;
 
 
@@ -39,8 +44,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //inicialisamos el objeto firebase
+        mDialog = new SpotsDialog.Builder()
+                .setContext(this)
+                .setTheme(R.style.CustomPD)
+                .setCancelable(false)
+                .build();
+
         fAuth = FirebaseAuth.getInstance();
+
+        //inicialisamos el objeto firebase
 
         //referenciamos los views
         bregis = (Button)  findViewById(R.id.b_nuevo);
@@ -54,18 +66,21 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String emai= email.getText().toString().trim();
                 String contra = contrasena.getText().toString().trim();
-
+                mDialog.show();
                 if(TextUtils.isEmpty(emai)){
                     email.setError("Se requiere correo");
+                    mDialog.dismiss();
                     return;
                 }
                 if(TextUtils.isEmpty(contra)){
                     contrasena.setError("Se requiere contraseña");
+                    mDialog.dismiss();
                     return;
                 }
 
                 if(contra.length()<6) {
                     contrasena.setError("Contraseña debe de ser mayor de 6 caracteres");
+                    mDialog.dismiss();
                     return;
                 }
                 //progressBar.setVisibility(View.VISIBLE);
@@ -76,10 +91,12 @@ public class MainActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()){
                             Toast.makeText(MainActivity.this,"Inicio exitoso", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(getApplicationContext(), Menu.class));
+                            startActivity(new Intent(getApplicationContext(), MenuActivity.class));
+                            mDialog.dismiss();
                             finish();
                         }else{
                             Toast.makeText(MainActivity.this,"Error¡ "+ task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                            mDialog.dismiss();
                             //progressBar.setVisibility(View.GONE);
                         }
                     }
@@ -137,13 +154,13 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
     @Override
     protected void onResume() {
         super.onResume();
         currentUser = fAuth.getCurrentUser();
-        if(currentUser != null){
-            startActivity((new Intent(getApplicationContext(), Menu.class)));
-            finish();
-        }
+        if(currentUser != null)
+            startActivity((new Intent(getApplicationContext(), MenuActivity.class)));
+
     }
 }

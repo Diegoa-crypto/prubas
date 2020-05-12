@@ -12,92 +12,99 @@
         android:src="@drawable/f"
         android:scaleType="centerCrop"/>
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:orientation="vertical"
-        android:background="#d8000000"
-        android:gravity="center"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
-        <ImageView
-            android:layout_width="300dp"
-            android:layout_height="300dp"
-            android:layout_marginBottom="40dp"
-            android:src="@drawable/logo_grande" />
-
-
-        <EditText
-            android:id="@+id/t_email"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginBottom="10dp"
-            android:background="@drawable/input"
-            android:hint="@string/correo"
-            android:paddingLeft="20dp"
-            android:paddingTop="10dp"
-            android:paddingRight="10dp"
-            android:paddingBottom="10dp"
-            android:textColor="#ffffff"
-            android:textColorHint="#ccc" />
+            android:orientation="vertical"
+            android:background="#d8000000"
+            android:gravity="center"
+            android:layout_height="match_parent">
 
-        <EditText
-            android:id="@+id/t_contra"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginBottom="20dp"
-            android:background="@drawable/input"
-            android:hint="@string/contrsena"
-            android:paddingLeft="20dp"
-            android:paddingTop="10dp"
-            android:paddingRight="10dp"
-            android:paddingBottom="10dp"
-            android:password="true"
-            android:textColor="#ffffff"
-            android:textColorHint="#ccc" />
-
-        <Button
-            android:id="@+id/b_ingreso"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginBottom="10dp"
-            android:background="@drawable/bt_redondeado"
-            android:elevation="5dp"
-            android:text="@string/inicio"
-            android:textColor="#403f3f"
-            android:textSize="16dp" />
-
-        <Button
-            android:id="@+id/b_nuevo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginBottom="10dp"
-            android:background="@drawable/bt_redondeado"
-            android:elevation="5dp"
-            android:text="@string/registro"
-            android:textColor="#403f3f"
-            android:textSize="16dp" />
-
-        <TextView
-            android:id="@+id/t_recuperar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingLeft="20dp"
-            android:paddingTop="10dp"
-            android:paddingRight="10dp"
-            android:paddingBottom="5dp"
-            android:text="@string/olvidaste"
-            android:textColor="#ffffff"
-            android:textSize="18sp" />
+            <ImageView
+                android:layout_width="300dp"
+                android:layout_height="300dp"
+                android:layout_marginBottom="40dp"
+                android:src="@drawable/logo_grande" />
 
 
+            <EditText
+                android:id="@+id/t_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/input"
+                android:hint="@string/correo"
+                android:inputType="textEmailAddress"
+                android:paddingLeft="20dp"
+                android:paddingTop="10dp"
+                android:paddingRight="10dp"
+                android:paddingBottom="10dp"
+                android:textColor="#ffffff"
+                android:textColorHint="#ccc" />
 
-    </LinearLayout>
+            <EditText
+                android:id="@+id/t_contra"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/input"
+                android:hint="@string/contrsena"
+                android:inputType="textPassword"
+                android:paddingLeft="20dp"
+                android:paddingTop="10dp"
+                android:paddingRight="10dp"
+                android:paddingBottom="10dp"
+                android:password="true"
+                android:textColor="#ffffff"
+                android:textColorHint="#ccc" />
+
+            <Button
+                android:id="@+id/b_ingreso"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/bt_redondeado"
+                android:elevation="5dp"
+                android:text="@string/inicio"
+                android:textColor="#403f3f"
+                android:textSize="16dp" />
+
+            <Button
+                android:id="@+id/b_nuevo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/bt_redondeado"
+                android:elevation="5dp"
+                android:text="@string/registro"
+                android:textColor="#403f3f"
+                android:textSize="16dp" />
+
+            <TextView
+                android:id="@+id/t_recuperar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="20dp"
+                android:paddingTop="10dp"
+                android:paddingRight="10dp"
+                android:paddingBottom="5dp"
+                android:text="@string/olvidaste"
+                android:textColor="#ffffff"
+                android:textSize="18sp" />
+
+
+        </LinearLayout>
+    </ScrollView>
 </RelativeLayout>
