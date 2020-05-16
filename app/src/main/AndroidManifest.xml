@@ -17,7 +17,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".PersonProfileActivity"></activity>
+        <activity android:name=".ComentsActivity"/>
+        <activity android:name=".PersonProfileActivity" />
         <activity android:name=".ChatActivity" />
         <activity android:name=".ProfileActivity" />
         <activity android:name=".ProductDetailsActivity" />

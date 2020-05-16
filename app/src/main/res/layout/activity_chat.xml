@@ -30,7 +30,7 @@
             android:id="@+id/send_image_file_button"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_select_image"/>
+            android:src="@drawable/inter"/>
         <EditText
             android:id="@+id/input_message"
             android:layout_width="300dp"
@@ -41,7 +41,7 @@
             android:id="@+id/send_menssage_button"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_send_message"/>
+            android:src="@drawable/enviar"/>
 
     </LinearLayout>
 

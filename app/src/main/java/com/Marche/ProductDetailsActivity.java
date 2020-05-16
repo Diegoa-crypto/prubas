@@ -38,8 +38,8 @@ public class ProductDetailsActivity extends AppCompatActivity {
     private String PostKey;
     FirebaseAuth fAuth;
     private FirebaseFirestore fStore;
-    private String usuarioID;
-    private DatabaseReference ClickPostRef;
+    private String user_id = "";
+    private DatabaseReference ClickPostRef, db;
     LinearLayout linearLayout, send_user_info;
     BottomSheetBehavior bottomSheetBehavior;
 
@@ -53,6 +53,9 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
 
         PostKey = getIntent().getExtras().get("PostKey").toString();
+
+
+        fStore = FirebaseFirestore.getInstance();
 
         productName =(TextView) findViewById(R.id.product_name_details);
         uName =(TextView) findViewById(R.id.post_profile_name);
@@ -88,17 +91,14 @@ public class ProductDetailsActivity extends AppCompatActivity {
                     {
                         if(which==0)
                         {
-                            usuarioID = getIntent().getExtras().get("userid").toString();
-                            fStore = FirebaseFirestore.getInstance();
-                            CollectionReference restaurants= fStore.collection("Usuarios");
                             Intent profileintent = new Intent(ProductDetailsActivity.this, PersonProfileActivity.class);
-                            restaurants.add(usuarioID);
+                            profileintent.putExtra("user_id",user_id);
                             startActivity(profileintent);
-                            Log.d("TAG", "onSuccess: Usuario creado con el ID "+usuarioID);
 
                         }if(which==1){
 
                         Intent chatintent = new Intent(ProductDetailsActivity.this, ChatActivity.class);
+
                         startActivity(chatintent);
 
                     }
@@ -128,6 +128,8 @@ public class ProductDetailsActivity extends AppCompatActivity {
                     productName.setText(products.getPname());
                     productprice.setText(products.getPrice());
                     //necesito agregar la fecha en que se registro el usuario
+
+                    user_id=products.getUserid();
 
                     Picasso.get().load(products.getImage()).into(productImage);
                     Picasso.get().load(products.getUserImage()).into(profileImageView);

@@ -121,7 +121,8 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
                 .build();
 
         FirebaseRecyclerAdapter<Products, ProductViewHolder> adapter =
-                new FirebaseRecyclerAdapter<Products, ProductViewHolder>(options) {
+                new FirebaseRecyclerAdapter<Products, ProductViewHolder>(options)
+                {
                     @Override
                     protected void onBindViewHolder(@NonNull ProductViewHolder holder, int position, @NonNull Products model)
                     {
@@ -158,6 +159,7 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
         adapter.startListening();
 
     }
+
 
 
 

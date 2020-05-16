@@ -52,4 +52,7 @@
     <string name="mi_alimento">Estoy comiendo sano con Marche</string>
     <string name="escribe_mensaje">Escribe el mensaje aqui</string>
     <string name="perfil">Perfil</string>
+    <string name="coment">Comentarios:</string>
+    <string name="coment_en">Comentado en</string>
+    <string name="esxribe_coment">Escribe un comentario aqui...</string>
 </resources>

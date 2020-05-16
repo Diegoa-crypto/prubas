@@ -59,9 +59,9 @@
             android:layout_below="@+id/correo_user_profile"
             android:textAlignment="center"
             android:textAllCaps="false"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="40dp"
             android:textColor="@color/black"
-            android:textSize="22sp"/>
+            android:textSize="20sp"/>
         <LinearLayout
             android:id="@+id/ll_user"
             android:layout_width="match_parent"
@@ -72,33 +72,33 @@
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_marginTop="30dp"
+                android:layout_gravity="bottom"
                 android:layout_height="wrap_content">
                 <ImageButton
                     android:id="@+id/like_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/dislike"
-                    android:layout_marginLeft="50dp"
+
                     />
                 <TextView
                     android:id="@+id/diplay_no_of_likes"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0 likes"
-                    android:padding="15dp"
                     android:layout_gravity="center_vertical"
                     android:textColor="@color/black"
                     android:textSize="16sp"
                     android:textStyle="bold"
+                    android:layout_weight="1"
                     />
                 <ImageButton
                     android:id="@+id/comment_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/nombre"
-                    android:layout_marginLeft="40dp"
-                    android:baselineAlignBottom="false"/>
+
+                    />
 
 
 
