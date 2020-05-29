@@ -44,6 +44,7 @@ public class ComentsActivity extends AppCompatActivity
     private String userID;
     private FirebaseFirestore fStore;
     private FirestoreRecyclerAdapter<Coomments, CommentsViewHolder> adapter;
+   // public int  myusername, mydate, mytime, mycomment;
 
 
     @Override
@@ -82,7 +83,8 @@ public class ComentsActivity extends AppCompatActivity
                 docoRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
                     public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                        if(documentSnapshot.exists()) {
+                        if(documentSnapshot.exists())
+                        {
                             String userName = documentSnapshot.getString("fName");
                             ValidateComment(userName);
 
@@ -101,7 +103,7 @@ public class ComentsActivity extends AppCompatActivity
     protected void onStart()
     {
         super.onStart();
-        Query query = fStore.collection("Usurios").document(user_id).collection("Comments")
+        Query query = fStore.collection("Usuarios").document(user_id).collection("Comments")
                 .orderBy("date");
         FirestoreRecyclerOptions<Coomments> options = new FirestoreRecyclerOptions.Builder<Coomments>()
                 .setQuery(query,Coomments.class)
@@ -110,11 +112,11 @@ public class ComentsActivity extends AppCompatActivity
                     @Override
                     protected void onBindViewHolder(@NonNull CommentsViewHolder holder, int position, @NonNull Coomments model)
                     {
-                        holder.myUserName.setText(model.getUsername()+"  ");
-                        holder.myDate.setText("  Fecha "+model.getDate());
-                        holder.myTime.setText("  Hora "+model.getTime());
-                        holder.myComment.setText(model.getComment());
 
+                        holder.myUserName.setText(model.getUsername()+"  ");
+                        holder.myDate.setText("  Fecha:  "+model.getDate());
+                        holder.myTime.setText("  Hora:  "+model.getTime());
+                        holder.myComment.setText(model.getComment());
                     }
 
                     @NonNull
@@ -133,9 +135,6 @@ public class ComentsActivity extends AppCompatActivity
 
 
         //CollectionReference userref=fStore.collection("Usurios").document(user_id).collection("Comments");
-
-
-
 
     }
     @Override
@@ -158,13 +157,13 @@ public class ComentsActivity extends AppCompatActivity
         else{
             Calendar calFordDate = Calendar.getInstance();
             SimpleDateFormat currentDate = new SimpleDateFormat("dd-MMMM-yyyy");
-            final String saveCurrentDate = currentDate.format(calFordDate.getTime());
+            String saveCurrentDate = currentDate.format(calFordDate.getTime());
 
             Calendar calFordTime = Calendar.getInstance();
             SimpleDateFormat currentTime = new SimpleDateFormat("HH:mm");
-            final String saveCurrentTime = currentTime.format(calFordDate.getTime());
+            String saveCurrentTime = currentTime.format(calFordDate.getTime());
 
-            final String RandomKey = userID+currentDate+currentTime;
+            String RandomKey = userID+currentDate+currentTime;
 
             DocumentReference comentRef=fStore
                     .collection("Usuarios").document(user_id)

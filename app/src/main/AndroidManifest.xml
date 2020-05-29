@@ -17,12 +17,17 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".ComentsActivity"/>
+        <activity android:name=".Nuevo_mensaje_Activity"></activity>
+        <activity android:name=".ProductoAdapter" />
+        <activity android:name=".InfoChatActivity" />
+        <activity android:name=".ComentsActivity" />
         <activity android:name=".PersonProfileActivity" />
         <activity android:name=".ChatActivity" />
         <activity android:name=".ProfileActivity" />
         <activity android:name=".ProductDetailsActivity" />
-        <activity android:name=".SettinsActivity" />
+        <activity
+            android:name=".SettinsActivity"
+            android:parentActivityName=".MenuActivity" />
         <activity
             android:name=".MenuActivity"
             android:label="@string/title_activity_menu"

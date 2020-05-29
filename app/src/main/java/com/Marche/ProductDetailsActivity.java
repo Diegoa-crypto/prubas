@@ -38,7 +38,9 @@ public class ProductDetailsActivity extends AppCompatActivity {
     private String PostKey;
     FirebaseAuth fAuth;
     private FirebaseFirestore fStore;
+    private String porst_key="";
     private String user_id = "";
+    private String user_name = "";
     private DatabaseReference ClickPostRef, db;
     LinearLayout linearLayout, send_user_info;
     BottomSheetBehavior bottomSheetBehavior;
@@ -97,8 +99,10 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
                         }if(which==1){
 
-                        Intent chatintent = new Intent(ProductDetailsActivity.this, ChatActivity.class);
-
+                        Intent chatintent = new Intent(ProductDetailsActivity.this, InfoChatActivity.class);
+                        chatintent.putExtra("user_id",user_id);
+                        chatintent.putExtra("porst_key",porst_key);
+                        chatintent.putExtra("userName", user_name);
                         startActivity(chatintent);
 
                     }
@@ -130,6 +134,8 @@ public class ProductDetailsActivity extends AppCompatActivity {
                     //necesito agregar la fecha en que se registro el usuario
 
                     user_id=products.getUserid();
+                    porst_key=products.getPid();
+                    user_name=products.getUserName();
 
                     Picasso.get().load(products.getImage()).into(productImage);
                     Picasso.get().load(products.getUserImage()).into(profileImageView);

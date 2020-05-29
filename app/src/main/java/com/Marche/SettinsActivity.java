@@ -261,7 +261,8 @@ public class SettinsActivity extends AppCompatActivity
     private void userInfoDisplay(final CircleImageView profileImageView, final EditText fullNameEditText, final EditText userPhoneEditText, final EditText adressEditText)
     {
         userID = fAuth.getCurrentUser().getUid();
-        fStore.collection("Usuarios").document(userID).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        fStore.collection("Usuarios").document(userID).addSnapshotListener(new EventListener<DocumentSnapshot>()
+        {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
                 if(documentSnapshot.exists()) {

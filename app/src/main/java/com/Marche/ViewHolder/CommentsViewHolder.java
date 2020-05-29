@@ -19,6 +19,7 @@ public class CommentsViewHolder extends RecyclerView.ViewHolder
 
         myUserName=(TextView)itemView.findViewById(R.id.comment_username);
         myComment=(TextView)itemView.findViewById(R.id.comment_text);
+        myTime=(TextView)itemView.findViewById(R.id.comment_time);
         myDate=(TextView)itemView.findViewById(R.id.comment_date);
         myUserName=(TextView)itemView.findViewById(R.id.comment_username);
     }

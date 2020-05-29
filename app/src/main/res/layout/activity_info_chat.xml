@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".InfoChatActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar_info"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/colorPrimaryDark">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/close_info_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/Close"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_alignParentStart="true"/>
+
+            </RelativeLayout>
+
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
+        <LinearLayout
+            android:id="@+id/todo"
+            android:layout_below="@+id/app_bar_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_margin="7dp"
+            android:background="@drawable/bt_redondeado">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_margin="1dp">
+                <TextView
+                    android:id="@+id/nombre_producto_info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/namedeproduct"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:textStyle="bold"/>
+
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/price_desde"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_margin="10dp">
+
+                <TextView
+                    android:id="@+id/precio_producto_info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/priced"
+                    android:textSize="22sp"
+                    android:textStyle="bold"/>
+                <TextView
+                    android:id="@+id/desde_producto_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/Desde"
+                    android:textAlignment="viewEnd"
+                    android:textSize="14sp"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+        </LinearLayout>
+    <LinearLayout
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/todo"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/info_phone_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/fui_phone_hint"
+            android:layout_margin="15dp"
+            android:padding="10dp"/>
+        <EditText
+            android:id="@+id/info_full_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/info_phone_number"
+            android:hint="@string/telefono"
+            android:layout_margin="15dp"
+            android:padding="10dp"/>
+        <EditText
+            android:id="@+id/info_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/info_full_name"
+            android:hint="@string/correo"
+            android:layout_margin="15dp"
+            android:padding="10dp"/>
+        <EditText
+            android:id="@+id/info_mensaje"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/info_full_name"
+            android:hint="@string/escribe_mensaje"
+            android:layout_margin="15dp"
+            android:padding="10dp"/>
+        <Button
+            android:id="@+id/enviar_user_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/Enviar_mensaje"
+            android:textSize="18sp"
+            android:layout_marginTop="15dp"
+            android:textAllCaps="false"
+            android:padding="4dp"
+            android:layout_margin="15dp"
+            android:textColor="@color/black"
+            android:background="@drawable/bt_2"/>
+
+
+
+    </LinearLayout>
+
+
+</RelativeLayout>

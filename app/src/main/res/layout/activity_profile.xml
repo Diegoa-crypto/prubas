@@ -58,7 +58,7 @@
             android:layout_below="@+id/correo_user_profile_my"
             android:textAlignment="center"
             android:textAllCaps="false"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="40dp"
             android:textColor="@color/colorPrimary"
             android:textSize="22sp"/>
 

@@ -7,10 +7,9 @@ import com.Marche.Perfil.Products;
 import com.Marche.ViewHolder.ProductViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -18,10 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.core.view.GravityCompat;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,12 +25,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.storage.FirebaseStorage;
 import com.squareup.picasso.Picasso;
 
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -60,7 +54,8 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
     private DatabaseReference ProductsRef;
     private RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
-    String usuarioID;
+    private static final String TAG = "";
+    private String usuarioID;
 
 
     @Override
@@ -68,6 +63,8 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
+
+
 
         ProductsRef = FirebaseDatabase.getInstance().getReference().child("Products");
 
@@ -207,6 +204,7 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
         {
             Intent intent = new Intent(MenuActivity.this, SettinsActivity.class);
             startActivity(intent);
+            finish();
 
         }
         else if (id == R.id.logout)
@@ -219,6 +217,10 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
         {
             startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
             finish();
+        }else if (id == R.id.nav_mensajes)
+        {
+            startActivity(new Intent(getApplicationContext(), Nuevo_mensaje_Activity.class));
+            finish();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -229,8 +231,12 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
         usuarioID = fAuth.getCurrentUser().getUid();
         fStore.collection("Usuarios").document(usuarioID).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                if(documentSnapshot.exists()) {
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot,
+                                @Nullable FirebaseFirestoreException e) {
+                if(e != null) {
+                    Log.w(TAG, "Error: ", e);
+                    return;
+                }if(documentSnapshot!=null){
                     NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
                     View headerView = navigationView.getHeaderView(0);
 
@@ -240,6 +246,8 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
                     UserNameTextView.setText(documentSnapshot.getString("fName"));
                     Picasso.get().load(documentSnapshot.getString("image")).placeholder(R.drawable.profile).into(profileImageView);
 
+                }else{
+                    Log.d(TAG,"Sin datos");
                 }
             }
         });
