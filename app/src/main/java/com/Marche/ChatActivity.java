@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -43,19 +44,28 @@ import java.util.Map;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatActivity extends AppCompatActivity {
+
     private Toolbar ChattoolBar;
-    private ImageButton SendMessageButton, SendImagefileButton;
+
+    private ImageButton SendMessageButton;
     private EditText userMessageInput;
+
     private String messageReceicverID, messageReceiverName, messageSenderID;
     private DatabaseReference RootRef;
     private String saveCurrentDate, saveCurrentTime;
+
     private FirebaseAuth mAuth;
+
     private LinearLayoutManager linearLayoutManager;
     private MessagesAdapter messageAdapter;
     private TextView receiverName;
     private CircleImageView receiverProfileImage;
-    private String user_id = "";
-    List<Messages> userMessagesList;
+
+
+    Intent intent;
+
+    List<Messages> mMensaje;
+
     RecyclerView recyclerView;
 
 
@@ -64,9 +74,11 @@ public class ChatActivity extends AppCompatActivity {
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+
         IntializeFields();
 
         RootRef= FirebaseDatabase.getInstance().getReference();
+
         recyclerView=findViewById(R.id.messages_list_users);
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager=new LinearLayoutManager(getApplicationContext());
@@ -74,13 +86,13 @@ public class ChatActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(linearLayoutManager);
 
         mAuth= FirebaseAuth.getInstance();
+
         messageSenderID=mAuth.getCurrentUser().getUid();
 
+        intent = getIntent();
 
-
-        messageReceicverID=getIntent().getExtras().get("user_id").toString();
+        messageReceicverID=intent.getStringExtra("userid");
         //messageReceiverName=getIntent().getExtras().get("userName").toString();
-
 
 
         SendMessageButton.setOnClickListener(new View.OnClickListener()
@@ -88,7 +100,8 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String msg=userMessageInput.getText().toString();
-                if(!msg.equals("")){
+                if(!msg.equals(""))
+                {
                     sendMessage(messageSenderID,messageReceicverID,msg);
                 }else {
                     Toast.makeText(ChatActivity.this, "Necesitas escribir un mensaje", Toast.LENGTH_SHORT).show();
@@ -114,19 +127,20 @@ public class ChatActivity extends AppCompatActivity {
 
     }
     private void readMessage(final String myid, final String userid){
-        userMessagesList=new ArrayList<>();
+        mMensaje=new ArrayList<>();
+
         RootRef=FirebaseDatabase.getInstance().getReference("Messages");
         RootRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                userMessagesList.clear();
+                mMensaje.clear();
                 for(DataSnapshot snapshot:dataSnapshot.getChildren()){
                     Messages messages=snapshot.getValue(Messages.class);
                     if(messages.getPara().equals(myid)&& messages.getFrom().equals(userid)||
                         messages.getPara().equals(userid)&&messages.getFrom().equals(myid)){
-                        userMessagesList.add(messages);
+                        mMensaje.add(messages);
                     }
-                    messageAdapter=new MessagesAdapter(ChatActivity.this,userMessagesList);
+                    messageAdapter=new MessagesAdapter(ChatActivity.this,mMensaje);
                     recyclerView.setAdapter(messageAdapter);
 
                 }
@@ -156,7 +170,7 @@ public class ChatActivity extends AppCompatActivity {
         receiverName=(TextView) findViewById(R.id.custom_profile_name);
 
         SendMessageButton=(ImageButton) findViewById(R.id.send_menssage_button);
-        SendImagefileButton=(ImageButton) findViewById(R.id.send_image_file_button);
+       // SendImagefileButton=(ImageButton) findViewById(R.id.send_image_file_button);
         userMessageInput = (EditText) findViewById(R.id.input_message);
 
     }

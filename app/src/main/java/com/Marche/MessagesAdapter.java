@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -28,23 +29,27 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
+import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MessagesViewHolder>
 {
-    private List<Messages> userMessagesList;
+    private List<Messages> mMensaje;
     public static final int MSG_TYPE_LEFT=0;
     public static final int MSG_TYPE_RIGHT=1;
     private Context mContext;
     private FirebaseAuth mAuth;
-    private String userID;
+
+    FirebaseUser fuser;
+
     private FirebaseFirestore fStore;
+
     private DatabaseReference usersDatabaseRef;
     private static final String TAG = "";
 
-    public MessagesAdapter (Context context, List<Messages> userMessagesList){
-        this.userMessagesList = userMessagesList;
+    public MessagesAdapter (Context mContext, List<Messages> mMensaje){
+        this.mMensaje = mMensaje;
         this.mContext = mContext;
 
     }
@@ -57,7 +62,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
     public MessagesAdapter.MessagesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
         mAuth = FirebaseAuth.getInstance();
-        fStore = FirebaseFirestore.getInstance();
+
         if(viewType==MSG_TYPE_RIGHT) {
             View view = LayoutInflater.from(mContext).inflate(R.layout.chat_item_right, parent, false);
             return new MessagesAdapter.MessagesViewHolder(view);
@@ -65,18 +70,18 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
             View view = LayoutInflater.from(mContext).inflate(R.layout.chat_item_left, parent, false);
             return new MessagesAdapter.MessagesViewHolder(view);
         }
-
     }
+
 
     @Override
     public void onBindViewHolder(@NonNull MessagesAdapter.MessagesViewHolder holder, int position) {
-        Messages messages=userMessagesList.get(position);
+        Messages messages=mMensaje.get(position);
         holder.show_message.setText(messages.getMessage());
     }
 
     @Override
     public int getItemCount(){
-        return userMessagesList.size();
+        return mMensaje.size();
     }
 
     public class MessagesViewHolder extends RecyclerView.ViewHolder
@@ -95,8 +100,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
 
     @Override
     public int getItemViewType(int position){
-        userID = mAuth.getCurrentUser().getUid();
-        if(userMessagesList.get(position).getFrom().equals(userID)){
+        fuser = FirebaseAuth.getInstance().getCurrentUser();
+        if(mMensaje.get(position).getFrom().equals(fuser.getUid())){
             return MSG_TYPE_RIGHT;
         }else{
             return MSG_TYPE_LEFT;

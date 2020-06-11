@@ -16,16 +16,27 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.Marche.Perfil.Products;
+import com.Marche.Perfil.Usuarios;
+import com.Marche.ViewHolder.ProductAdapter;
 import com.Marche.ViewHolder.ProductViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,12 +44,14 @@ import java.util.List;
 public class Nuevo_mensaje_Activity extends AppCompatActivity {
 
     private RecyclerView recyclerView_nuevo_mensjae;
-    private List<Products> mProducts;
-    private List<String> productsList;
+    private List<Usuarios> mUsuarios;
+    private List<String> usuariosList;
+    private FirebaseFirestore fStore;
     private FirebaseAuth fAuth;
     private String userID;
-    private DatabaseReference RootRef, ProductsRef;
+    DatabaseReference RootRef, ProductsRef;
     RecyclerView.LayoutManager layoutManager;
+    private ProductAdapter productAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -53,113 +66,74 @@ public class Nuevo_mensaje_Activity extends AppCompatActivity {
 
         fAuth = FirebaseAuth.getInstance();
         userID = fAuth.getCurrentUser().getUid();
+        fStore = FirebaseFirestore.getInstance();
 
-        productsList=new ArrayList<>();
+        usuariosList=new ArrayList<>();
 
         RootRef= FirebaseDatabase.getInstance().getReference("Messages");
-        ProductsRef= FirebaseDatabase.getInstance().getReference("Products");
+        RootRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                usuariosList.clear();
+                for(DataSnapshot snapshot: dataSnapshot.getChildren()){
+                    Messages messages =snapshot.getValue(Messages.class);
+                    if(messages.getFrom().equals(userID)){
+                            usuariosList.add(messages.getPara());
+
+                    }if(messages.getPara().equals(userID)){
+                            usuariosList.add(messages.getFrom());
+
+                    }
+
+                }
+                readChats();
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
-    @Override
-    protected void onStart()
-    {
-        super.onStart();
-        FirebaseRecyclerOptions<Products>options=
-                new FirebaseRecyclerOptions.Builder<Products>()
-                .setQuery(ProductsRef, Products.class)
-                .build();
+    private void readChats() {
+        mUsuarios=new ArrayList<>();
+        fStore = FirebaseFirestore.getInstance();
 
-        FirebaseRecyclerAdapter<Products, ProductViewHolder> adapter = new
-                FirebaseRecyclerAdapter<Products, ProductViewHolder>(options) {
-                    @Override
-                    protected void onBindViewHolder(@NonNull ProductViewHolder holder, int i, @NonNull Products products)
-                    {
-                        final String PostKey = getRef(i).getKey();
+        CollectionReference collectionReference=fStore.collection("Usuarios");
+        collectionReference.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
 
-                        RootRef.addValueEventListener(new ValueEventListener()
-                        {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+                for (DocumentSnapshot documentSnapshot: queryDocumentSnapshots)
+                {
+                    Usuarios usuarios = documentSnapshot.toObject(Usuarios.class);
+                    for (String id : usuariosList){
+                        if(usuarios.getUserID().equals(id)){
+                            if(mUsuarios.size() != 0)
                             {
-                                productsList.clear();
-                                for(DataSnapshot snapshot: dataSnapshot.getChildren()){
-                                    Messages messages=snapshot.getValue(Messages.class);
-                                    if(messages.getFrom().equals(userID)){
-                                        productsList.add(messages.getPara());
-                                    }
-                                    if(messages.getPara().equals(userID)){
-                                        productsList.add(messages.getFrom());
+                                for(Usuarios usuarios1: mUsuarios)
+                                {
+                                    if(!usuarios.getUserID().equals(usuarios1.getUserID()))
+                                    {
+                                        mUsuarios.add(usuarios);
+                                        break;
                                     }
                                 }
-                                //Aqui es para leer el me
-                                mProducts= new ArrayList<>();
-
-                                RootRef = FirebaseDatabase.getInstance().getReference("Products");
-
-                                RootRef.addValueEventListener(new ValueEventListener()
-                                {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        mProducts.clear();
-
-                                        for (DataSnapshot snapshot: dataSnapshot.getChildren())
-                                        {
-                                            Products products = snapshot.getValue(Products.class);
-                                            String key_producto=products.getPid();
-                                            for(String id:productsList){
-                                                if(mProducts.size() !=0){
-                                                    for (Products products1:mProducts){
-                                                        if(!products.getPid().equals(products1.getPid())){
-                                                            mProducts.add(products);
-                                                            break;
-                                                        }
-                                                    }
-                                                }else{
-                                                    mProducts.add(products);
-                                                    break;
-                                                }
-                                            }
-                                        }
-
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                    }
-                                });
-
+                            }else {
+                                mUsuarios.add(usuarios);
+                                break;
                             }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                            }
-                        });
-                        holder.itemView.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent intent = new Intent(Nuevo_mensaje_Activity.this, ChatActivity.class);
-                                intent.putExtra("user_id",PostKey);
-                                startActivity(intent);
-                            }
-                        });
-
+                        }
                     }
+                }
+                productAdapter =new ProductAdapter(Nuevo_mensaje_Activity.this,mUsuarios);
+                recyclerView_nuevo_mensjae.setAdapter(productAdapter);
 
-                    @NonNull
-                    @Override
-                    public ProductViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.new_mensaje_item, parent, false);
-                        ProductViewHolder holder = new ProductViewHolder(view);
-                        return holder;
-                    }
-                };
-
-        recyclerView_nuevo_mensjae.setAdapter(adapter);
-        adapter.startListening();
-
-
+            }
+        });
 
 
     }

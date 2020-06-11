@@ -31,6 +31,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class InfoChatActivity extends AppCompatActivity {
     private EditText fullNameEditText, userPhoneEditText, adressEditText, userMessageInput;
@@ -38,9 +39,9 @@ public class InfoChatActivity extends AppCompatActivity {
     private Button enviar_mensaje;
     private String messageReceicverID, messageSenderID,PostKey;
     private FirebaseAuth mAuth;
+    private FirebaseFirestore fStore;
     private DatabaseReference RootRef, ClickPostRef;
     private String saveCurrentDate, saveCurrentTime;
-    private FirebaseFirestore fStore;
 
 
     @Override
@@ -60,6 +61,7 @@ public class InfoChatActivity extends AppCompatActivity {
         close_info = (TextView) findViewById(R.id.close_info_btn);
 
         mAuth = FirebaseAuth.getInstance();
+        fStore = FirebaseFirestore.getInstance();
         messageSenderID = mAuth.getCurrentUser().getUid();
 
         RootRef= FirebaseDatabase.getInstance().getReference();
@@ -135,7 +137,7 @@ public class InfoChatActivity extends AppCompatActivity {
             hashMap.put("date", saveCurrentDate);
             hashMap.put("type", "text");
             hashMap.put("from", messageSenderID);
-            hashMap.put("para", messageReceicverID);
+            hashMap.put("para", PostKey);
 
             user_message_key.child("Messages").push().setValue(hashMap);
 
@@ -171,7 +173,8 @@ public class InfoChatActivity extends AppCompatActivity {
         {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                if(documentSnapshot.exists()) {
+
+                if(documentSnapshot!=null && documentSnapshot.exists()) {
 
                     String name = documentSnapshot.getString("fName");
                     String phone = documentSnapshot.getString("fTelefono");

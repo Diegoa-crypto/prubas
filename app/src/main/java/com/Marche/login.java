@@ -103,6 +103,7 @@ public class login extends AppCompatActivity {
                             userID = fAuth.getCurrentUser().getUid();
                             DocumentReference documentReference = fStore.collection("Usuarios").document(userID);
                             Map<String, Object> user = new HashMap<>();
+                            user.put("userID",userID);
                             user.put("date",saveCurrentDate);
                             user.put("fName", bnombre);
                             user.put("fTelefono", btelefono);
