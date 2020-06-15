@@ -2,7 +2,7 @@ package com.Marche.Perfil;
 
 public class Products
 {
-    private String pname, description, price, image, category, pid, date, time, userid, userImage, userName;
+    private String pname, description, price, image, category, pid, date, time, userid, userImage, userName, userphone;
 
     public Products ()
     {
@@ -10,6 +10,7 @@ public class Products
     }
 
     public Products(String pname, String description, String price, String image, String category, String pid, String date, String time, String userid, String userImage, String userName) {
+        this.userphone=userphone;
         this.userImage=userImage;
         this.userName=userName;
         this.pname = pname;
@@ -29,6 +30,14 @@ public class Products
 
     public void setUserImage(String userImage) {
         this.userImage = userImage;
+    }
+
+    public String getUserphone() {
+        return userphone;
+    }
+
+    public void setUserphone(String userphone) {
+        this.userphone = userphone;
     }
 
     public String getUserName() {

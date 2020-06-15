@@ -17,12 +17,14 @@ import com.Marche.R;
 
 import java.util.List;
 
-public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder> {
+public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder>
+{
     private Context mContext;
     private List<Usuarios> mUsuarios;
 
 
-    public ProductAdapter(Context mContext, List<Usuarios> mUsuarios){
+    public ProductAdapter(Context mContext, List<Usuarios> mUsuarios)
+    {
         this.mUsuarios = mUsuarios;
         this.mContext=mContext;
 
@@ -53,7 +55,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     }
 
     @Override
-    public int getItemCount() {
+    public int getItemCount()
+    {
         return mUsuarios.size();
     }
 

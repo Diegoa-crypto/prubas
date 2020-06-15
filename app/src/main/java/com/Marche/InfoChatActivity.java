@@ -39,6 +39,7 @@ public class InfoChatActivity extends AppCompatActivity {
     private Button enviar_mensaje;
     private String messageReceicverID, messageSenderID,PostKey;
     private FirebaseAuth mAuth;
+
     private FirebaseFirestore fStore;
     private DatabaseReference RootRef, ClickPostRef;
     private String saveCurrentDate, saveCurrentTime;

@@ -54,5 +54,6 @@
     <string name="perfil">Perfil</string>
     <string name="coment">Comentarios:</string>
     <string name="coment_en">Comentado en</string>
+    <string name="mensajes_in">Mensajes</string>
     <string name="esxribe_coment">Escribe un comentario aqui...</string>
 </resources>

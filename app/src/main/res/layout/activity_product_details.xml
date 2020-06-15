@@ -5,11 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ProductDetailsActivity">
+
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <include layout="@layout/bottom_sheet"></include>
+
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
     <ImageView
         android:id="@+id/product_image_details"
         android:layout_width="match_parent"
@@ -71,7 +75,8 @@
                 android:layout_height="60dp"
                 android:src="@drawable/profile"
                 android:scaleType="centerCrop"
-                android:layout_marginLeft="4dp"
+                app:civ_border_width="2dp"
+                app:civ_border_color="@android:color/white"
                 />
             <LinearLayout
                 android:id="@+id/all_send_user"

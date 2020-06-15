@@ -26,6 +26,7 @@ import com.Marche.Perfil.Products;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -59,6 +60,7 @@ public class ChatActivity extends AppCompatActivity {
     private LinearLayoutManager linearLayoutManager;
     private MessagesAdapter messageAdapter;
     private TextView receiverName;
+    FirebaseUser fuser;
     private CircleImageView receiverProfileImage;
 
 
@@ -75,9 +77,17 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        IntializeFields();
+        ChattoolBar = (Toolbar)findViewById(R.id.chat_bar_layout);
+        setSupportActionBar(ChattoolBar);
+        ActionBar actionBar=getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowCustomEnabled(true);
 
-        RootRef= FirebaseDatabase.getInstance().getReference();
+        LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View action_bar_view = layoutInflater.inflate(R.layout.chat_custom_bar, null);
+        actionBar.setCustomView(action_bar_view);
+
+
 
         recyclerView=findViewById(R.id.messages_list_users);
         recyclerView.setHasFixedSize(true);
@@ -85,7 +95,17 @@ public class ChatActivity extends AppCompatActivity {
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
 
+        receiverName=(TextView) findViewById(R.id.custom_profile_name);
+
+        SendMessageButton=(ImageButton) findViewById(R.id.send_menssage_button);
+        // SendImagefileButton=(ImageButton) findViewById(R.id.send_image_file_button);
+        userMessageInput = (EditText) findViewById(R.id.input_message);
+
+        RootRef= FirebaseDatabase.getInstance().getReference();
+
         mAuth= FirebaseAuth.getInstance();
+
+        fuser= FirebaseAuth.getInstance().getCurrentUser();
 
         messageSenderID=mAuth.getCurrentUser().getUid();
 
@@ -102,7 +122,7 @@ public class ChatActivity extends AppCompatActivity {
                 String msg=userMessageInput.getText().toString();
                 if(!msg.equals(""))
                 {
-                    sendMessage(messageSenderID,messageReceicverID,msg);
+                    sendMessage(fuser.getUid(),messageReceicverID,msg);
                 }else {
                     Toast.makeText(ChatActivity.this, "Necesitas escribir un mensaje", Toast.LENGTH_SHORT).show();
                 }
@@ -110,7 +130,7 @@ public class ChatActivity extends AppCompatActivity {
 
             }
         });
-        readMessage(messageSenderID,messageReceicverID);
+        readMessage(fuser.getUid(),messageReceicverID);
 
     }
     private void sendMessage(String from, String para, String message){
@@ -136,8 +156,8 @@ public class ChatActivity extends AppCompatActivity {
                 mMensaje.clear();
                 for(DataSnapshot snapshot:dataSnapshot.getChildren()){
                     Messages messages=snapshot.getValue(Messages.class);
-                    if(messages.getPara().equals(myid)&& messages.getFrom().equals(userid)||
-                        messages.getPara().equals(userid)&&messages.getFrom().equals(myid)){
+                    if(messages.getPara().equals(myid) && messages.getFrom().equals(userid)||
+                        messages.getPara().equals(userid) && messages.getFrom().equals(myid)){
                         mMensaje.add(messages);
                     }
                     messageAdapter=new MessagesAdapter(ChatActivity.this,mMensaje);
@@ -151,27 +171,6 @@ public class ChatActivity extends AppCompatActivity {
 
             }
         });
-
-    }
-
-
-
-    private void IntializeFields()
-    {
-        ChattoolBar = (Toolbar)findViewById(R.id.chat_bar_layout);
-        setSupportActionBar(ChattoolBar);
-        ActionBar actionBar=getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setDisplayShowCustomEnabled(true);
-        LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View action_bar_view = layoutInflater.inflate(R.layout.chat_custom_bar, null);
-        actionBar.setCustomView(action_bar_view);
-
-        receiverName=(TextView) findViewById(R.id.custom_profile_name);
-
-        SendMessageButton=(ImageButton) findViewById(R.id.send_menssage_button);
-       // SendImagefileButton=(ImageButton) findViewById(R.id.send_image_file_button);
-        userMessageInput = (EditText) findViewById(R.id.input_message);
 
     }
 }

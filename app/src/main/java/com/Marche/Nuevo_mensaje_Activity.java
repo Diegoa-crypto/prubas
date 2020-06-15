@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.provider.DocumentsContract;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,8 +22,11 @@ import com.Marche.ViewHolder.ProductAdapter;
 import com.Marche.ViewHolder.ProductViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -49,7 +53,9 @@ public class Nuevo_mensaje_Activity extends AppCompatActivity {
     private FirebaseFirestore fStore;
     private FirebaseAuth fAuth;
     private String userID;
-    DatabaseReference RootRef, ProductsRef;
+    FirebaseUser fuser;
+    private static final String TAG = "";
+    DatabaseReference RootRef;
     RecyclerView.LayoutManager layoutManager;
     private ProductAdapter productAdapter;
 
@@ -66,6 +72,7 @@ public class Nuevo_mensaje_Activity extends AppCompatActivity {
 
         fAuth = FirebaseAuth.getInstance();
         userID = fAuth.getCurrentUser().getUid();
+        fuser= FirebaseAuth.getInstance().getCurrentUser();
         fStore = FirebaseFirestore.getInstance();
 
         usuariosList=new ArrayList<>();
@@ -75,14 +82,16 @@ public class Nuevo_mensaje_Activity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 usuariosList.clear();
-                for(DataSnapshot snapshot: dataSnapshot.getChildren()){
+                for(DataSnapshot snapshot: dataSnapshot.getChildren())
+                {
                     Messages messages =snapshot.getValue(Messages.class);
-                    if(messages.getFrom().equals(userID)){
-                            usuariosList.add(messages.getPara());
+                    if(messages.getFrom().equals(fuser.getUid()))
+                    {
+                        usuariosList.add(messages.getPara());
 
-                    }if(messages.getPara().equals(userID)){
-                            usuariosList.add(messages.getFrom());
-
+                    }if(messages.getPara().equals(fuser.getUid()))
+                    {
+                        usuariosList.add(messages.getFrom());
                     }
 
                 }
@@ -98,20 +107,103 @@ public class Nuevo_mensaje_Activity extends AppCompatActivity {
         });
     }
 
-    private void readChats() {
+    private void readChats()
+    {
         mUsuarios=new ArrayList<>();
         fStore = FirebaseFirestore.getInstance();
 
         CollectionReference collectionReference=fStore.collection("Usuarios");
-        collectionReference.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        collectionReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if(task.isSuccessful()){
+                    for (QueryDocumentSnapshot documentSnapshot: task.getResult())
+                    {
+                        Usuarios usuarios = documentSnapshot.toObject(Usuarios.class);
+                        for (String id : usuariosList)
+                        {
+                            if(usuarios.getUserID().equals(id))
+                            {
+                                if(mUsuarios.size() != 0)
+                                {
+                                    for(Usuarios usuarios1: mUsuarios)
+                                    {
+                                        if(!usuarios.getUserID().equals(usuarios1.getUserID()))
+                                        {
+                                            mUsuarios.add(usuarios);
+                                            break;
+
+                                        }
+                                    }
+                                }else {
+                                    mUsuarios.add(usuarios);
+                                    break;
+
+                                }
+                            }
+                        }
+                    }
+                    productAdapter =new ProductAdapter(Nuevo_mensaje_Activity.this,mUsuarios);
+                    recyclerView_nuevo_mensjae.setAdapter(productAdapter);
+
+                }
+
+            }
+        });
+
+                /*
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if(task.isSuccessful()){
+                    for (QueryDocumentSnapshot documentSnapshot: task.getResult())
+                    {
+                        Usuarios usuarios = documentSnapshot.toObject(Usuarios.class);
+                        for (String id : usuariosList)
+                        {
+                            if(usuarios.getUserID().equals(id))
+                            {
+                                if(mUsuarios.size() != 0)
+                                {
+                                    for(Usuarios usuarios1: mUsuarios)
+                                    {
+                                        if(!usuarios.getUserID().equals(usuarios1.getUserID()))
+                                        {
+                                            mUsuarios.add(usuarios);
+                                            break;
+
+                                        }
+                                    }
+                                }else {
+                                    mUsuarios.add(usuarios);
+                                    break;
+
+                                }
+                            }
+                        }
+                    }
+                    productAdapter =new ProductAdapter(Nuevo_mensaje_Activity.this,mUsuarios);
+                    recyclerView_nuevo_mensjae.setAdapter(productAdapter);
+
+                }
+
+            }
+        });
+        */
+                /*
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>()
+        {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-
+               // for (DocumentSnapshot documentSnapshot: queryDocumentSnapshots)
                 for (DocumentSnapshot documentSnapshot: queryDocumentSnapshots)
                 {
                     Usuarios usuarios = documentSnapshot.toObject(Usuarios.class);
-                    for (String id : usuariosList){
-                        if(usuarios.getUserID().equals(id)){
+
+                    for (String id : usuariosList)
+                    {
+                        if(usuarios.getUserID().equals(id))
+                        {
                             if(mUsuarios.size() != 0)
                             {
                                 for(Usuarios usuarios1: mUsuarios)
@@ -120,11 +212,13 @@ public class Nuevo_mensaje_Activity extends AppCompatActivity {
                                     {
                                         mUsuarios.add(usuarios);
                                         break;
+
                                     }
                                 }
                             }else {
                                 mUsuarios.add(usuarios);
                                 break;
+
                             }
                         }
                     }
@@ -134,6 +228,8 @@ public class Nuevo_mensaje_Activity extends AppCompatActivity {
 
             }
         });
+        */
+
 
 
     }

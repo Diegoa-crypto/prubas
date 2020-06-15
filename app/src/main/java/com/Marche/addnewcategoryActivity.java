@@ -247,11 +247,13 @@ public class addnewcategoryActivity extends AppCompatActivity {
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if (documentSnapshot.exists()) {
                     String userFullName = documentSnapshot.getString("fName");
+                    String userphone= documentSnapshot.getString("fTelefono");
                     String userProfileImage = documentSnapshot.getString("image");
 
                     HashMap <String, Object> productMap = new HashMap<>();
                     productMap.put("counter",countPost);
                     productMap.put("userName", userFullName);
+                    productMap.put("userphone", userphone);
                     productMap.put("userImage", userProfileImage);
                     productMap.put("userid", userID);
                     productMap.put("pid", productRandomKey);
