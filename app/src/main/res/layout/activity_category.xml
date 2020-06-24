@@ -6,13 +6,17 @@
     android:layout_height="match_parent"
     tools:context=".CategoryActivity">
 
+    <include
+        android:id="@id/toolbar"
+        layout="@layout/app_bar_layout"/>
+
     <TextView
+        android:layout_below="@+id/toolbar"
         android:id="@+id/slogan_category"
+        android:textColor="@color/black"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="40dp"
         android:text="@string/agregar"
         android:textAlignment="center"
         android:textSize="30sp"
@@ -27,7 +31,7 @@
         android:orientation="horizontal"
         android:layout_centerHorizontal="true"
         android:gravity="center"
-        android:layout_marginTop="130dp">
+        android:layout_marginTop="90dp">
 
         <ImageView
             android:id="@+id/derivados"

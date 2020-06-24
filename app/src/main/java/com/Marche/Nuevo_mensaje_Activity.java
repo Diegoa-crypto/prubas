@@ -1,29 +1,16 @@
 package com.Marche;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Context;
-import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.provider.DocumentsContract;
-import android.util.AttributeSet;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
-import com.Marche.Perfil.Products;
 import com.Marche.Perfil.Usuarios;
 import com.Marche.ViewHolder.ProductAdapter;
-import com.Marche.ViewHolder.ProductViewHolder;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -33,17 +20,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentChange;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class Nuevo_mensaje_Activity extends AppCompatActivity {
 
@@ -53,11 +37,14 @@ public class Nuevo_mensaje_Activity extends AppCompatActivity {
     private FirebaseFirestore fStore;
     private FirebaseAuth fAuth;
     private String userID;
+    private CircleImageView profile_image;
     FirebaseUser fuser;
     private static final String TAG = "";
     DatabaseReference RootRef;
+    private String messageReceicverID;
     RecyclerView.LayoutManager layoutManager;
     private ProductAdapter productAdapter;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -65,10 +52,19 @@ public class Nuevo_mensaje_Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_newmendaje);
 
+        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Mensajes");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
         recyclerView_nuevo_mensjae = findViewById(R.id.recycler_new_mensaje);
         recyclerView_nuevo_mensjae.setHasFixedSize(true);
         layoutManager=new LinearLayoutManager(this);
         recyclerView_nuevo_mensjae.setLayoutManager(layoutManager);
+
+        sharedPreferences = getPreferences(MODE_PRIVATE);
+        String pID= sharedPreferences.getString("porst_key","no hay nada");
 
         fAuth = FirebaseAuth.getInstance();
         userID = fAuth.getCurrentUser().getUid();
@@ -78,7 +74,8 @@ public class Nuevo_mensaje_Activity extends AppCompatActivity {
         usuariosList=new ArrayList<>();
 
         RootRef= FirebaseDatabase.getInstance().getReference("Messages");
-        RootRef.addValueEventListener(new ValueEventListener() {
+        RootRef.addValueEventListener(new ValueEventListener()
+        {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 usuariosList.clear();
@@ -87,11 +84,17 @@ public class Nuevo_mensaje_Activity extends AppCompatActivity {
                     Messages messages =snapshot.getValue(Messages.class);
                     if(messages.getFrom().equals(fuser.getUid()))
                     {
-                        usuariosList.add(messages.getPara());
+                        if(!usuariosList.contains(messages.getPara())){
+                            usuariosList.add(messages.getPara());
+                        }
+
 
                     }if(messages.getPara().equals(fuser.getUid()))
                     {
-                        usuariosList.add(messages.getFrom());
+                        if(!usuariosList.contains(messages.getFrom())){
+                            usuariosList.add(messages.getFrom());
+                        }
+
                     }
 
                 }
@@ -105,6 +108,8 @@ public class Nuevo_mensaje_Activity extends AppCompatActivity {
 
             }
         });
+
+
     }
 
     private void readChats()
@@ -112,8 +117,10 @@ public class Nuevo_mensaje_Activity extends AppCompatActivity {
         mUsuarios=new ArrayList<>();
         fStore = FirebaseFirestore.getInstance();
 
+
         CollectionReference collectionReference=fStore.collection("Usuarios");
-        collectionReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        collectionReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+        {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if(task.isSuccessful()){
@@ -136,6 +143,7 @@ public class Nuevo_mensaje_Activity extends AppCompatActivity {
                                         }
                                     }
                                 }else {
+
                                     mUsuarios.add(usuarios);
                                     break;
 

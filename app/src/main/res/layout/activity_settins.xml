@@ -74,7 +74,9 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/profile_image_change_btn"
         android:hint="@string/fui_phone_hint"
-        android:layout_margin="15dp"
+        android:layout_marginTop="45dp"
+        android:layout_marginLeft="35dp"
+        android:layout_marginRight="35dp"
         android:padding="10dp"/>
     <EditText
         android:id="@+id/settings_full_name"
@@ -82,15 +84,19 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/settings_phone_number"
         android:hint="@string/telefono"
-        android:layout_margin="15dp"
+        android:layout_marginLeft="35dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginRight="35dp"
         android:padding="10dp"/>
     <EditText
         android:id="@+id/settings_address"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
         android:layout_below="@+id/settings_full_name"
         android:hint="@string/correo"
-        android:layout_margin="15dp"
+        android:layout_marginLeft="35dp"
+        android:layout_marginRight="35dp"
         android:padding="10dp"/>
 
 

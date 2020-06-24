@@ -2,14 +2,16 @@ package com.Marche.Perfil;
 
 public class Products
 {
-    private String pname, description, price, image, category, pid, date, time, userid, userImage, userName, userphone;
+    private String pname, description, price, image, category, pid, date, time, userid, userImage, userName, userphone, userDate;
 
     public Products ()
     {
 
     }
 
-    public Products(String pname, String description, String price, String image, String category, String pid, String date, String time, String userid, String userImage, String userName) {
+    public Products(String pname, String description, String price, String image, String category, String pid, String date,
+                    String time, String userid, String userImage, String userName, String userDate) {
+        this.userDate=userDate;
         this.userphone=userphone;
         this.userImage=userImage;
         this.userName=userName;
@@ -22,6 +24,14 @@ public class Products
         this.pid = pid;
         this.date = date;
         this.time = time;
+    }
+
+    public String getUserDate() {
+        return userDate;
+    }
+
+    public void setUserDate(String userDate) {
+        this.userDate = userDate;
     }
 
     public String getUserImage() {

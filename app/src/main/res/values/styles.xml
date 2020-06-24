@@ -24,4 +24,8 @@
         <item name="DialogSpotCount">6</item>
     </style>
 
+    <style name="MenuStyle" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:background">#ffffff</item>
+    </style>
+
 </resources>

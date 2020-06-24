@@ -34,7 +34,10 @@ public class ProfileActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-
+        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Perfil");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         profileImageView = (CircleImageView) findViewById(R.id.my_profile_pic_my);
         fullNameTextView = (TextView) findViewById(R.id.my_profile_full_name_my);
@@ -67,7 +70,7 @@ public class ProfileActivity extends AppCompatActivity
                     String name = documentSnapshot.getString("fName");
                     String phone = documentSnapshot.getString("fTelefono");
                     String address = documentSnapshot.getString("email");
-                    Picasso.get().load(image).into(profileImageView);
+                    Picasso.get().load(image).placeholder(R.drawable.profile).into(profileImageView);
                     fullNameTextView.setText(name);
                     adressTextView.setText(address);
 

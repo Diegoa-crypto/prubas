@@ -18,12 +18,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".Nuevo_mensaje_Activity"/>
+        <activity android:name=".Nuevo_mensaje_Activity"
+            android:parentActivityName=".MenuActivity" />
         <activity android:name=".InfoChatActivity" />
         <activity android:name=".ComentsActivity" />
         <activity android:name=".PersonProfileActivity" />
         <activity android:name=".ChatActivity" />
-        <activity android:name=".ProfileActivity" />
+        <activity android:name=".ProfileActivity"
+            android:parentActivityName=".MenuActivity"/>
         <activity android:name=".ProductDetailsActivity" />
         <activity
             android:name=".SettinsActivity"
@@ -34,8 +36,10 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".addnewcategoryActivity"
-            android:windowSoftInputMode="adjustPan|stateHidden" />
-        <activity android:name=".CategoryActivity" />
+            android:windowSoftInputMode="adjustPan|stateHidden"
+            android:parentActivityName=".CategoryActivity"/>
+        <activity android:name=".CategoryActivity"
+            android:parentActivityName=".MenuActivity"/>
         <activity
             android:name=".Fragmentos.InstruccionesActivity"
             android:label="@string/title_activity_instrucciones"

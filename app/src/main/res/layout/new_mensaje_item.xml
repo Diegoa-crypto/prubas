@@ -1,22 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="10dp">
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:id="@+id/product_image_new_mensaje"
-        android:src="@mipmap/ic_launcher"/>
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/namedeproduct"
-        android:id="@+id/nombre_producto_mensaje"
-        android:layout_toRightOf="@+id/product_image_new_mensaje"
-        android:layout_toEndOf="@+id/product_image_new_mensaje"
-        android:layout_marginLeft="10dp"/>
+        android:layout_margin="15dp"
+        android:orientation="horizontal">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:id="@+id/product_image_new_mensaje"
+            android:src="@drawable/nini"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/user_name"
+                android:id="@+id/nombre_producto_mensaje"
+                android:textAlignment="textStart"
+                android:textSize="18sp"
+                android:paddingLeft="5dp"
+                android:textStyle="bold"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/namedeproduct"
+                android:id="@+id/nombre_producto_mensaje_2"
+                android:textAlignment="textStart"
+                android:textSize="15sp"
+                android:paddingLeft="5dp"
+                android:textStyle="bold"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/ultimo_mensaje"
+                android:id="@+id/last_meesage"
+                android:textAlignment="textStart"
+                android:textSize="15sp"
+                android:paddingLeft="5dp"
+                />
+
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+
+
 
 
 

@@ -271,7 +271,7 @@ public class SettinsActivity extends AppCompatActivity
                     String name = documentSnapshot.getString("fName");
                     String phone = documentSnapshot.getString("fTelefono");
                     String address = documentSnapshot.getString("email");
-                    Picasso.get().load(image).into(profileImageView);
+                    Picasso.get().load(image).placeholder(R.drawable.profile).into(profileImageView);
                     fullNameEditText.setText(name);
                     userPhoneEditText.setText(phone);
                     adressEditText.setText(address);

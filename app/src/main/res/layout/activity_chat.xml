@@ -6,19 +6,38 @@
     android:layout_height="match_parent"
     tools:context=".ChatActivity"
     android:background="@color/colorGri">
-    <include
-        android:id="@+id/chat_bar_layout"
-        layout="@layout/app_bar_layout">
-    </include>
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:background="@color/colorPrimaryDark"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/Base.ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/MenuStyle">
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:id="@+id/profile_image"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/username"
+            android:textSize="18sp"
+            android:layout_marginLeft="25dp"
+            android:textColor="#fff"
+            android:textStyle="bold"
+            android:layout_marginStart="25dp"/>
+
+    </androidx.appcompat.widget.Toolbar>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/messages_list_users"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/chat_bar_layout"
+        android:layout_below="@+id/toolbar"
         android:layout_above="@+id/send_image_file_button"
-
         android:layout_centerHorizontal="true" />
+
         <ImageButton
             android:id="@+id/send_image_file_button"
             android:layout_width="wrap_content"

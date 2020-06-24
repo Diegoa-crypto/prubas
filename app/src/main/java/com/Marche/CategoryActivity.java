@@ -17,6 +17,11 @@ public class CategoryActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category);
 
+        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Publica un alimento");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         Derivados = (ImageView) findViewById(R.id.derivados);
         Frutos = (ImageView) findViewById(R.id.frutos);
         Verduras = (ImageView) findViewById(R.id.verduras);

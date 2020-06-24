@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -33,6 +34,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
@@ -57,14 +62,19 @@ public class ChatActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
 
+
+
     private LinearLayoutManager linearLayoutManager;
     private MessagesAdapter messageAdapter;
-    private TextView receiverName;
+    private TextView username;
     FirebaseUser fuser;
     private CircleImageView receiverProfileImage;
+    private SharedPreferences sharedPreferences;
 
 
     Intent intent;
+
+    private FirebaseFirestore fStore;
 
     List<Messages> mMensaje;
 
@@ -77,17 +87,18 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        ChattoolBar = (Toolbar)findViewById(R.id.chat_bar_layout);
-        setSupportActionBar(ChattoolBar);
-        ActionBar actionBar=getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setDisplayShowCustomEnabled(true);
+        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View action_bar_view = layoutInflater.inflate(R.layout.chat_custom_bar, null);
-        actionBar.setCustomView(action_bar_view);
-
-
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         recyclerView=findViewById(R.id.messages_list_users);
         recyclerView.setHasFixedSize(true);
@@ -95,11 +106,12 @@ public class ChatActivity extends AppCompatActivity {
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        receiverName=(TextView) findViewById(R.id.custom_profile_name);
+        username=(TextView) findViewById(R.id.username);
 
         SendMessageButton=(ImageButton) findViewById(R.id.send_menssage_button);
         // SendImagefileButton=(ImageButton) findViewById(R.id.send_image_file_button);
         userMessageInput = (EditText) findViewById(R.id.input_message);
+        receiverProfileImage=(CircleImageView) findViewById(R.id.profile_image);
 
         RootRef= FirebaseDatabase.getInstance().getReference();
 
@@ -109,16 +121,36 @@ public class ChatActivity extends AppCompatActivity {
 
         messageSenderID=mAuth.getCurrentUser().getUid();
 
+        fStore = FirebaseFirestore.getInstance();
+
         intent = getIntent();
 
         messageReceicverID=intent.getStringExtra("userid");
+
         //messageReceiverName=getIntent().getExtras().get("userName").toString();
+
+        fStore.collection("Usuarios").document(messageReceicverID).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                if(documentSnapshot!=null && documentSnapshot.exists()) {
+                    String name = documentSnapshot.getString("fName");
+                    username.setText(name);
+                }
+
+            }
+        });
+
+        //sharedPreferences=getSharedPreferences("nombre",Context.MODE_PRIVATE);
+        //final String pname = sharedPreferences.getString("pname","nada");
+
+        //Picasso.get().load(pimage).placeholder(R.drawable.nini).into(receiverProfileImage);
 
 
         SendMessageButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 String msg=userMessageInput.getText().toString();
                 if(!msg.equals(""))
                 {
@@ -132,8 +164,11 @@ public class ChatActivity extends AppCompatActivity {
         });
         readMessage(fuser.getUid(),messageReceicverID);
 
+
+
     }
-    private void sendMessage(String from, String para, String message){
+    private void sendMessage(String from, String para, String message)
+    {
 
         DatabaseReference reference =FirebaseDatabase.getInstance().getReference();
         HashMap<String, Object> hashMap= new HashMap<>();
@@ -143,7 +178,31 @@ public class ChatActivity extends AppCompatActivity {
         hashMap.put("type", "text");
         hashMap.put("from", from);
         hashMap.put("para", para);
+
+
         reference.child("Messages").push().setValue(hashMap);
+
+/*
+        final DatabaseReference chatRef=FirebaseDatabase.getInstance().getReference("Chatlist")
+                .child(fuser.getUid())
+                .child(messageReceicverID);
+        chatRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.exists()){
+                    chatRef.child("id").setValue(messageReceicverID);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+ */
+
+
 
     }
     private void readMessage(final String myid, final String userid){

@@ -6,9 +6,15 @@
     android:layout_height="match_parent"
     android:background="@color/colorProfile"
     tools:context=".ProfileActivity">
+
+    <include
+        android:id="@id/toolbar"
+        layout="@layout/app_bar_layout"/>
+
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/my_profile_pic_my"
@@ -16,7 +22,7 @@
             android:layout_height="300dp"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="10dp"
             android:src="@drawable/profile"/>
         <TextView
             android:id="@+id/my_profile_full_name_my"
@@ -61,6 +67,13 @@
             android:layout_marginTop="40dp"
             android:textColor="@color/colorPrimary"
             android:textSize="22sp"/>
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/logo_peque"
+            android:layout_below="@+id/user_status_my"
+            android:layout_marginTop="10dp"
+            android:layout_centerHorizontal="true"/>
 
 
 

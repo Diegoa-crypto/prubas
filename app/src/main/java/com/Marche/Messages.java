@@ -2,19 +2,37 @@ package com.Marche;
 
 public class Messages
 {
-    public String data, time, type, message, from, para;
+    public String data, time, type, message, from, para, pname,pimage;
 
     public Messages(){
 
     }
 
-    public Messages(String data, String time, String type, String message, String from,String para) {
+    public Messages(String data, String time, String type, String message, String from,String para, String pimage) {
+        this.pimage=pimage;
+        this.pname=pname;
         this.data = data;
         this.para = para;
         this.time = time;
         this.type = type;
         this.message = message;
         this.from = from;
+    }
+
+    public String getPimage() {
+        return pimage;
+    }
+
+    public void setPimage(String pimage) {
+        this.pimage = pimage;
+    }
+
+    public String getPname() {
+        return pname;
+    }
+
+    public void setPname(String pname) {
+        this.pname = pname;
     }
 
     public String getData() {

@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -46,6 +47,8 @@ public class ProductDetailsActivity extends AppCompatActivity {
     FirebaseAuth fAuth;
     private FirebaseFirestore fStore;
     private String porst_key="";
+    private String pname="";
+    private String pimage="";
     private String user_id = "";
     private String user_name = "";
     private String phone_id = "";
@@ -54,6 +57,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
     private DatabaseReference ClickPostRef, db;
     LinearLayout linearLayout, send_user_info;
     BottomSheetBehavior bottomSheetBehavior;
+    private SharedPreferences sharedPreferences;
 
 
     @Override
@@ -84,13 +88,17 @@ public class ProductDetailsActivity extends AppCompatActivity {
         bottomSheetBehavior= BottomSheetBehavior.from(linearLayout);
         bottomSheetBehavior.setState(bottomSheetBehavior.STATE_COLLAPSED);
 
-        enviar_mensaje.setOnClickListener(new View.OnClickListener() {
+        enviar_mensaje.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 Intent chatintent2 = new Intent(ProductDetailsActivity.this, InfoChatActivity.class);
                 chatintent2.putExtra("user_id",user_id);
                 chatintent2.putExtra("porst_key",porst_key);
                 chatintent2.putExtra("userName", user_name);
+                chatintent2.putExtra("pname", pname);
+
                 startActivity(chatintent2);
             }
         });
@@ -134,7 +142,14 @@ public class ProductDetailsActivity extends AppCompatActivity {
                         chatintent.putExtra("user_id",user_id);
                         chatintent.putExtra("porst_key",porst_key);
                         chatintent.putExtra("userName", user_name);
+                        chatintent.putExtra("pname", pname);
+                        chatintent.putExtra("pimage", pimage);
                         startActivity(chatintent);
+
+                        sharedPreferences = getPreferences(MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString("porst_key", porst_key);
+                        editor.commit();
 
                     }
 
@@ -156,21 +171,22 @@ public class ProductDetailsActivity extends AppCompatActivity {
                 {
                     Products products = dataSnapshot.getValue(Products.class);
 
-
-
+                    uDate.setText(products.getUserDate());
                     uName.setText(products.getUserName());
                     productDescription.setText(products.getDescription());
                     productName.setText(products.getPname());
                     productprice.setText(products.getPrice());
-                    //necesito agregar la fecha en que se registro el usuario
+
 
                     user_id=products.getUserid();
                     porst_key=products.getPid();
+                    pname=products.getPname();
                     user_name=products.getUserName();
                     phone_id=products.getUserphone();
+                    pimage=products.getImage();
 
                     Picasso.get().load(products.getImage()).into(productImage);
-                    Picasso.get().load(products.getUserImage()).into(profileImageView);
+                    Picasso.get().load(products.getUserImage()).placeholder(R.drawable.profile).into(profileImageView);
 
                 }
             }

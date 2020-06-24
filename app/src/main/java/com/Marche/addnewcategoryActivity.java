@@ -34,6 +34,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -68,6 +69,11 @@ public class addnewcategoryActivity extends AppCompatActivity {
         fAuth = FirebaseAuth.getInstance();
         userID = fAuth.getCurrentUser().getUid();
 
+        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Publica un alimento");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         CategoryName = getIntent().getExtras().get("category").toString();
         ProductImagesRef = FirebaseStorage.getInstance().getReference().child("Product Images");
         ProductsRef = FirebaseDatabase.getInstance().getReference().child("Products");
@@ -84,7 +90,12 @@ public class addnewcategoryActivity extends AppCompatActivity {
             @Override
             public void onClick(View v)
             {
-             OpenGallery();
+             //OpenGallery();
+                CropImage.activity(ImageUri)
+                        .setAspectRatio(1,1)
+                        .start(addnewcategoryActivity.this);
+
+
             }
         });
         AddNewProductButton.setOnClickListener(new View.OnClickListener() {
@@ -97,7 +108,7 @@ public class addnewcategoryActivity extends AppCompatActivity {
 
 
     }
-
+/*
     private void OpenGallery()
     {
         Intent galleryIntent = new Intent();
@@ -106,16 +117,35 @@ public class addnewcategoryActivity extends AppCompatActivity {
         startActivityForResult(galleryIntent, GalleryPick);
     }
 
+ */
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && resultCode==RESULT_OK && data != null)
+        {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            ImageUri= result.getUri();
+
+            InputProductImage.setImageURI(ImageUri);
+        }
+        else
+        {
+            Toast.makeText(this, "Error, Intentalo de nuevo", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(addnewcategoryActivity.this, SettinsActivity.class));
+            finish();
+        }
+
+        /*
 
         if(requestCode==GalleryPick && resultCode==RESULT_OK && data != null)
         {
             ImageUri = data.getData();
             InputProductImage.setImageURI(ImageUri);
         }
+
+         */
     }
 
     private void ValidateProductData()
@@ -249,9 +279,11 @@ public class addnewcategoryActivity extends AppCompatActivity {
                     String userFullName = documentSnapshot.getString("fName");
                     String userphone= documentSnapshot.getString("fTelefono");
                     String userProfileImage = documentSnapshot.getString("image");
+                    String userdate=documentSnapshot.getString("date");
 
                     HashMap <String, Object> productMap = new HashMap<>();
                     productMap.put("counter",countPost);
+                    productMap.put("userDate",userdate);
                     productMap.put("userName", userFullName);
                     productMap.put("userphone", userphone);
                     productMap.put("userImage", userProfileImage);
@@ -279,12 +311,14 @@ public class addnewcategoryActivity extends AppCompatActivity {
 
                                         loadingBar.dismiss();
                                         Toast.makeText(addnewcategoryActivity.this, "Producto agregado con exito", Toast.LENGTH_SHORT).show();
+                                        finish();
                                     }
                                     else
                                     {
                                         loadingBar.dismiss();
                                         String message = task.getException().toString();
                                         Toast.makeText(addnewcategoryActivity.this, "Error: "+ message, Toast.LENGTH_SHORT).show();
+                                        finish();
                                     }
 
                                 }

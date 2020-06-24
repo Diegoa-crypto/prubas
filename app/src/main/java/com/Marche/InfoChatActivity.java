@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -39,6 +41,9 @@ public class InfoChatActivity extends AppCompatActivity {
     private Button enviar_mensaje;
     private String messageReceicverID, messageSenderID,PostKey;
     private FirebaseAuth mAuth;
+    private String pname, pimage;
+    private SharedPreferences sharedPreferences;
+
 
     private FirebaseFirestore fStore;
     private DatabaseReference RootRef, ClickPostRef;
@@ -80,6 +85,8 @@ public class InfoChatActivity extends AppCompatActivity {
         messageReceicverID=getIntent().getExtras().get("porst_key").toString();
         fStore = FirebaseFirestore.getInstance();
 
+
+
         userInfoDisplay(fullNameEditText, userPhoneEditText, adressEditText);
 
         //crear metodo para mostrar informacion del producto como en el activity product details
@@ -92,10 +99,20 @@ public class InfoChatActivity extends AppCompatActivity {
                 {
                     Products products = dataSnapshot.getValue(Products.class);
 
+
                     name_product.setText(products.getPname());
                     precio_producto.setText(products.getPrice());
+                    pname=products.getPname();
+/*
+                    sharedPreferences = getSharedPreferences("nombre", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("pname",pname);
+                    editor.commit();
+
+ */
 
                 }
+
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -132,7 +149,10 @@ public class InfoChatActivity extends AppCompatActivity {
             SimpleDateFormat currentTime = new SimpleDateFormat("HH:mm");
             saveCurrentTime = currentTime.format(calFordDate.getTime());
 
+
+
             HashMap<String, Object> hashMap= new HashMap<>();
+            hashMap.put("pname",pname);
             hashMap.put("message", messageText);
             hashMap.put("time", saveCurrentTime);
             hashMap.put("date", saveCurrentDate);
@@ -141,7 +161,6 @@ public class InfoChatActivity extends AppCompatActivity {
             hashMap.put("para", PostKey);
 
             user_message_key.child("Messages").push().setValue(hashMap);
-
 
             user_message_key.updateChildren(hashMap).addOnCompleteListener(new OnCompleteListener()
             {

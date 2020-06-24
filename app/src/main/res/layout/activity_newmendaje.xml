@@ -5,9 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Nuevo_mensaje_Activity">
+
+    <include
+        android:id="@id/toolbar"
+        layout="@layout/app_bar_layout"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar"
         android:id="@+id/recycler_new_mensaje"/>
 
 </RelativeLayout>

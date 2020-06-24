@@ -20,7 +20,7 @@
     <string name="tab_text_2">Tab 2</string>
     <string name="tab_text_3">Tab 3</string>
     <string name="tab_text_4">Tab 4</string>
-    <string name="agregar">Compartir Alimento</string>
+    <string name="agregar">Escoje una categoria</string>
     <string name="namedeproduct">Nombre del producto</string>
     <string name="description">Detalles de produccion</string>
     <string name="pricedp">Precio del producto</string>
@@ -56,4 +56,5 @@
     <string name="coment_en">Comentado en</string>
     <string name="mensajes_in">Mensajes</string>
     <string name="esxribe_coment">Escribe un comentario aqui...</string>
+    <string name="ultimo_mensaje">Ultimo mensaje</string>
 </resources>
