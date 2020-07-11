@@ -146,10 +146,10 @@ public class ProductDetailsActivity extends AppCompatActivity {
                         chatintent.putExtra("pimage", pimage);
                         startActivity(chatintent);
 
-                        sharedPreferences = getPreferences(MODE_PRIVATE);
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putString("porst_key", porst_key);
-                        editor.commit();
+                        //sharedPreferences = getPreferences(MODE_PRIVATE);
+                        //SharedPreferences.Editor editor = sharedPreferences.edit();
+                        //editor.putString("porst_key", porst_key);
+                        //editor.commit();
 
                     }
 

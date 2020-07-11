@@ -25,6 +25,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -43,6 +44,8 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.HashMap;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MenuActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -50,7 +53,9 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
     private AppBarConfiguration mAppBarConfiguration;
     FirebaseUser currentUser;
     FirebaseAuth fAuth;
+    FirebaseUser fuser;
     FirebaseFirestore fStore;
+    private DocumentReference Doc;
     private DatabaseReference ProductsRef;
     private RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
@@ -67,6 +72,8 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
 
 
         ProductsRef = FirebaseDatabase.getInstance().getReference().child("Products");
+
+        fuser= FirebaseAuth.getInstance().getCurrentUser();
 
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -210,8 +217,9 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
         else if (id == R.id.logout)
         {
             FirebaseAuth.getInstance().signOut();
-            startActivity(new Intent(getApplicationContext(), MainActivity.class));
-            finish();
+            startActivity(new Intent(getApplicationContext(), MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+            //finish();
+
         }
         else if (id == R.id.nav_perfil)
         {
@@ -255,6 +263,26 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
 
 
     }
+    private void status(String status){
 
+        Doc= fStore.collection("Usuarios").document(fuser.getUid());
 
+        HashMap<String, Object> hashMap=new HashMap<>();
+        hashMap.put("status",status);
+
+        Doc.update(hashMap);
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        status("online");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        status("offline");
+    }
 }

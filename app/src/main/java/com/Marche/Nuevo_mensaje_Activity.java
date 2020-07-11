@@ -8,9 +8,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import com.Marche.Notificaciones.Token;
+import com.Marche.Perfil.Chatlist;
 import com.Marche.Perfil.Usuarios;
 import com.Marche.ViewHolder.ProductAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -20,11 +23,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -33,10 +40,11 @@ public class Nuevo_mensaje_Activity extends AppCompatActivity {
 
     private RecyclerView recyclerView_nuevo_mensjae;
     private List<Usuarios> mUsuarios;
-    private List<String> usuariosList;
+    private List<Chatlist> usuariosList;
     private FirebaseFirestore fStore;
     private FirebaseAuth fAuth;
     private String userID;
+    private DocumentReference Doc;
     private CircleImageView profile_image;
     FirebaseUser fuser;
     private static final String TAG = "";
@@ -63,8 +71,8 @@ public class Nuevo_mensaje_Activity extends AppCompatActivity {
         layoutManager=new LinearLayoutManager(this);
         recyclerView_nuevo_mensjae.setLayoutManager(layoutManager);
 
-        sharedPreferences = getPreferences(MODE_PRIVATE);
-        String pID= sharedPreferences.getString("porst_key","no hay nada");
+        //sharedPreferences = getPreferences(MODE_PRIVATE);
+       // String pID= sharedPreferences.getString("porst_key","no hay nada");
 
         fAuth = FirebaseAuth.getInstance();
         userID = fAuth.getCurrentUser().getUid();
@@ -72,6 +80,26 @@ public class Nuevo_mensaje_Activity extends AppCompatActivity {
         fStore = FirebaseFirestore.getInstance();
 
         usuariosList=new ArrayList<>();
+        RootRef=FirebaseDatabase.getInstance().getReference("Chatlist").child(fuser.getUid());
+        RootRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                usuariosList.clear();
+                for(DataSnapshot snapshot:dataSnapshot.getChildren()) {
+                    Chatlist chatlist =snapshot.getValue(Chatlist.class);
+                    usuariosList.add(chatlist);
+                }
+                chatList();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        updateToken(FirebaseInstanceId.getInstance().getToken());
+
+        /*
 
         RootRef= FirebaseDatabase.getInstance().getReference("Messages");
         RootRef.addValueEventListener(new ValueEventListener()
@@ -84,16 +112,16 @@ public class Nuevo_mensaje_Activity extends AppCompatActivity {
                     Messages messages =snapshot.getValue(Messages.class);
                     if(messages.getFrom().equals(fuser.getUid()))
                     {
-                        if(!usuariosList.contains(messages.getPara())){
+                        //if(!usuariosList.contains(messages.getPara())){
                             usuariosList.add(messages.getPara());
-                        }
+                        //}
 
 
                     }if(messages.getPara().equals(fuser.getUid()))
                     {
-                        if(!usuariosList.contains(messages.getFrom())){
+                        //if(!usuariosList.contains(messages.getFrom())){
                             usuariosList.add(messages.getFrom());
-                        }
+                        //}
 
                     }
 
@@ -108,10 +136,43 @@ public class Nuevo_mensaje_Activity extends AppCompatActivity {
 
             }
         });
+        */
 
 
     }
+    private void updateToken(String token){
+        DatabaseReference reference=FirebaseDatabase.getInstance().getReference("Tokens");
+        Token token1=new Token(token);
+        reference.child(fuser.getUid()).setValue(token1);
+    }
 
+    private void chatList() {
+        mUsuarios=new ArrayList<>();
+        fStore = FirebaseFirestore.getInstance();
+        CollectionReference collectionReference=fStore.collection("Usuarios");
+        collectionReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                mUsuarios.clear();
+                for (QueryDocumentSnapshot documentSnapshot: task.getResult())
+                {
+                    Usuarios usuarios = documentSnapshot.toObject(Usuarios.class);
+                    for(Chatlist chatlist:usuariosList){
+                        if(usuarios.getUserID().equals(chatlist.getId())){
+                            mUsuarios.add(usuarios);
+                        }
+                    }
+
+                }
+                productAdapter =new ProductAdapter(Nuevo_mensaje_Activity.this,mUsuarios,true);
+                recyclerView_nuevo_mensjae.setAdapter(productAdapter);
+
+            }
+        });
+
+
+    }
+/*
     private void readChats()
     {
         mUsuarios=new ArrayList<>();
@@ -133,19 +194,20 @@ public class Nuevo_mensaje_Activity extends AppCompatActivity {
                             {
                                 if(mUsuarios.size() != 0)
                                 {
-                                    for(Usuarios usuarios1: mUsuarios)
-                                    {
-                                        if(!usuarios.getUserID().equals(usuarios1.getUserID()))
-                                        {
-                                            mUsuarios.add(usuarios);
-                                            break;
 
-                                        }
-                                    }
+                                    //for(Usuarios usuarios1: mUsuarios)
+                                    //{
+                                       // if(!usuarios.getUserID().equals(usuarios1.getUserID()))
+                                       // {
+                                            mUsuarios.add(usuarios);
+
+
+                                       // }
+                                    //}
                                 }else {
 
                                     mUsuarios.add(usuarios);
-                                    break;
+
 
                                 }
                             }
@@ -240,7 +302,7 @@ public class Nuevo_mensaje_Activity extends AppCompatActivity {
 
 
 
-    }
+    //}
 
 
 }

@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -14,15 +15,26 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.Marche.Notificaciones.APIService;
+import com.Marche.Notificaciones.Cliente;
+import com.Marche.Notificaciones.Datos;
+import com.Marche.Notificaciones.MyRespuesta;
+import com.Marche.Notificaciones.Sender;
+import com.Marche.Notificaciones.Token;
 import com.Marche.Perfil.Products;
+import com.Marche.Perfil.Usuarios;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -35,12 +47,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class InfoChatActivity extends AppCompatActivity {
     private EditText fullNameEditText, userPhoneEditText, adressEditText, userMessageInput;
     private TextView name_product, precio_producto, desde_producto, close_info;
     private Button enviar_mensaje;
-    private String messageReceicverID, messageSenderID,PostKey;
+    private String messageReceicverID,PostKey;
     private FirebaseAuth mAuth;
+    private DocumentReference Doc;
     private String pname, pimage;
     private SharedPreferences sharedPreferences;
 
@@ -48,7 +65,12 @@ public class InfoChatActivity extends AppCompatActivity {
     private FirebaseFirestore fStore;
     private DatabaseReference RootRef, ClickPostRef;
     private String saveCurrentDate, saveCurrentTime;
+    FirebaseUser fuser;
+    APIService apiService;
 
+    ValueEventListener seenListener;
+
+    boolean notify=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -68,7 +90,8 @@ public class InfoChatActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
-        messageSenderID = mAuth.getCurrentUser().getUid();
+        fuser= FirebaseAuth.getInstance().getCurrentUser();
+
 
         RootRef= FirebaseDatabase.getInstance().getReference();
 
@@ -76,7 +99,8 @@ public class InfoChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View v)
             {
-                finish();
+                startActivity(new Intent(InfoChatActivity.this,MenuActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+
             }
         });
 
@@ -85,7 +109,9 @@ public class InfoChatActivity extends AppCompatActivity {
         messageReceicverID=getIntent().getExtras().get("porst_key").toString();
         fStore = FirebaseFirestore.getInstance();
 
+        seendMessage(PostKey);
 
+        apiService= Cliente.getCliente("https://fcm.googleapis.com/").create(APIService.class);
 
         userInfoDisplay(fullNameEditText, userPhoneEditText, adressEditText);
 
@@ -103,6 +129,7 @@ public class InfoChatActivity extends AppCompatActivity {
                     name_product.setText(products.getPname());
                     precio_producto.setText(products.getPrice());
                     pname=products.getPname();
+                    pimage=products.getImage();
 /*
                     sharedPreferences = getSharedPreferences("nombre", Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -123,11 +150,35 @@ public class InfoChatActivity extends AppCompatActivity {
         enviar_mensaje.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                notify=true;
                 sendMessage();
             }
         });
 
 
+    }
+    private void seendMessage(final String userid)
+    {
+        RootRef=FirebaseDatabase.getInstance().getReference("Messages");
+        seenListener=RootRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot: dataSnapshot.getChildren()){
+                    Messages messages=snapshot.getValue(Messages.class);
+                    if(messages.getPara().equals(fuser.getUid())&&messages.getFrom().equals(userid)){
+                        HashMap<String, Object> hashMap = new HashMap<>();
+                        hashMap.put("visto",true);
+                        snapshot.getRef().updateChildren(hashMap);
+                    }
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void sendMessage()
@@ -153,16 +204,63 @@ public class InfoChatActivity extends AppCompatActivity {
 
             HashMap<String, Object> hashMap= new HashMap<>();
             hashMap.put("pname",pname);
+            hashMap.put("visto", false);
+            hashMap.put("pimage",pimage);
             hashMap.put("message", messageText);
             hashMap.put("time", saveCurrentTime);
             hashMap.put("date", saveCurrentDate);
             hashMap.put("type", "text");
-            hashMap.put("from", messageSenderID);
+            hashMap.put("from", fuser.getUid());
             hashMap.put("para", PostKey);
 
-            user_message_key.child("Messages").push().setValue(hashMap);
+            final DatabaseReference chatRef=FirebaseDatabase.getInstance().getReference("Chatlist")
+                    .child(PostKey)
+                    .child(fuser.getUid());
+            chatRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+                {
+                    if(!dataSnapshot.exists()){
+                        chatRef.child("id").setValue(fuser.getUid());
+                    }
+                }
 
-            user_message_key.updateChildren(hashMap).addOnCompleteListener(new OnCompleteListener()
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+            final String msg=messageText;
+            fStore.collection("Usuarios").document(fuser.getUid())
+                    .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    Usuarios usuarios = documentSnapshot.toObject(Usuarios.class);
+                    if(notify) {
+                        sendNotification(PostKey, usuarios.getfName(), msg);
+                    }
+                    notify=false;
+
+                }
+            });
+                    /*
+                    .addSnapshotListener(new EventListener<DocumentSnapshot>()
+            {
+                @Override
+                public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                    assert documentSnapshot != null;
+                    Usuarios usuarios = documentSnapshot.toObject(Usuarios.class);
+                    if(notify) {
+                        assert usuarios != null;
+                        sendNotification(PostKey, usuarios.getfName(), msg);
+                    }
+                    notify=false;
+                }
+            });
+            */
+
+            user_message_key.child("Messages").push().setValue(hashMap)
+                    .addOnCompleteListener(new OnCompleteListener()
             {
                 @Override
                 public void onComplete(@NonNull Task task)
@@ -170,14 +268,14 @@ public class InfoChatActivity extends AppCompatActivity {
                     if(task.isSuccessful()){
                         Toast.makeText(InfoChatActivity.this, "Mensaje enviado correctamente", Toast.LENGTH_SHORT).show();
                         userMessageInput.setText("");
-                        finish();
+                        startActivity(new Intent(InfoChatActivity.this, MenuActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
 
                     }
                     else{
                         String message=task.getException().getMessage();
                         Toast.makeText(InfoChatActivity.this, "Error:  "+message, Toast.LENGTH_SHORT).show();
                         userMessageInput.setText("");
-                        finish();
+                        startActivity(new Intent(InfoChatActivity.this, MenuActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                     }
 
 
@@ -185,11 +283,65 @@ public class InfoChatActivity extends AppCompatActivity {
             });
         }
     }
+    private void currentUser(String userId) {
+        SharedPreferences.Editor editor = getSharedPreferences("PREFS", MODE_PRIVATE).edit();
+        editor.putString("currentuser", userId);
+        editor.apply();
+    }
+    private void status(String status) {
+        Doc = fStore.collection("Users").document(fuser.getUid());
+
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("status", status);
+
+        Doc.update(hashMap);
+    }
+
+    private void sendNotification(String receiver, final String username, final String message)
+    {
+        DatabaseReference tokens=FirebaseDatabase.getInstance().getReference("Tokens");
+        Query query=tokens.orderByKey().equalTo(receiver);
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot snapshot: dataSnapshot.getChildren()){
+                    Token token=snapshot.getValue(Token.class);
+                    Datos datos=new Datos(fuser.getUid(),R.drawable.logo_peque,username+": "+message, "Nuevo Mensaje",messageReceicverID);
+
+                    Sender sender=new Sender(datos, token.getToken());
+                    apiService.sendNotification(sender)
+                            .enqueue(new Callback<MyRespuesta>() {
+                                @Override
+                                public void onResponse(Call<MyRespuesta> call, Response<MyRespuesta> response) {
+                                    if(response.code()==200){
+                                        if(response.body().success!=1){
+                                            Toast.makeText(InfoChatActivity.this, "!Fallo¡", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<MyRespuesta> call, Throwable t) {
+
+                                }
+                            });
+
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+    }
 
     private void userInfoDisplay(final EditText fullNameEditText, final EditText userPhoneEditText, final EditText adressEditText)
     {
-        messageSenderID = mAuth.getCurrentUser().getUid();
-        fStore.collection("Usuarios").document(messageSenderID).addSnapshotListener(new EventListener<DocumentSnapshot>()
+
+        fStore.collection("Usuarios").document(fuser.getUid()).addSnapshotListener(new EventListener<DocumentSnapshot>()
         {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
@@ -208,5 +360,21 @@ public class InfoChatActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        status("online");
+        currentUser(PostKey);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        status("offline");
+        RootRef.removeEventListener(seenListener);
+        currentUser("none");
     }
 }

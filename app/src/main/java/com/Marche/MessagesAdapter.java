@@ -89,6 +89,15 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
     public void onBindViewHolder(@NonNull MessagesAdapter.ViewHolder holder, int position) {
         Messages messages=mMensaje.get(position);
         holder.show_message.setText(messages.getMessage());
+        if(position==mMensaje.size()-1){
+            if(messages.isVisto()){
+                holder.txt_seen.setText("Visto");
+            }else{
+                holder.txt_seen.setText("Entregado");
+            }
+        }else{
+            holder.txt_seen.setVisibility(View.GONE);
+        }
     }
 
 
@@ -97,10 +106,12 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
     {
 
         public TextView show_message;
+        public TextView txt_seen;
 
         public ViewHolder(View itemView){
             super(itemView);
             show_message=itemView.findViewById(R.id.show_messages);
+            txt_seen=itemView.findViewById(R.id.txt_seen);
 
 
         }

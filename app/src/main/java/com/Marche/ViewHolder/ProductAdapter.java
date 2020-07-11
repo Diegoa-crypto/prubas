@@ -7,6 +7,7 @@ import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -23,6 +24,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
@@ -35,14 +37,15 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 {
     private Context mContext;
     private List<Usuarios> mUsuarios;
+    private String theLasMessage;
+    private boolean ischat;
 
 
-
-
-    public ProductAdapter(Context mContext, List<Usuarios> mUsuarios)
+    public ProductAdapter(Context mContext, List<Usuarios> mUsuarios, boolean ischat)
     {
         this.mUsuarios = mUsuarios;
         this.mContext=mContext;
+        this.ischat=ischat;
 
     }
 
@@ -56,17 +59,42 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull final ProductAdapter.ViewHolder holder, int position)
     {
-
         Usuarios usuarios = mUsuarios.get(position);
         final String userid= usuarios.getUserID();
         holder.username.setText(usuarios.getfName());
 
-        //SharedPreferences sharedPreferences = mContext.getSharedPreferences("pname",mContext.MODE_PRIVATE);
-        //String pname2 = sharedPreferences.getString("pname", "nada");
-        //holder.pname.setText(pname2);
+        if(ischat){
+            lastMessage(usuarios.getUserID(),holder.last_message);
+
+        }else{
+            holder.last_message.setVisibility(View.GONE);
+        }
+
+        if(ischat){
+            if(usuarios.getStatus().equals("online")){
+                holder.img_on.setVisibility(View.VISIBLE);
+                holder .img_off.setVisibility(View.GONE);
+            }else {
+                holder.img_on.setVisibility(View.GONE);
+                holder .img_off.setVisibility(View.VISIBLE);
+            }
+        }else{
+            holder.img_on.setVisibility(View.GONE);
+            holder .img_off.setVisibility(View.GONE);
+        }
 
 
-        nombre_producto(usuarios.getUserID(), holder.pname);
+
+
+        //SharedPreferences sharedPreferences = mContext.getSharedPreferences("nombre",mContext.MODE_PRIVATE);
+        //final String pimage = sharedPreferences.getString("pimage", "nada");
+
+
+
+
+
+        nombre_producto(usuarios.getUserID(), holder.pname,holder.pimage);
+
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,48 +109,115 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
     }
 
+
+
     @Override
     public int getItemCount()
     {
         return mUsuarios.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder
+    {
         public TextView username;
         private TextView pname;
         private CircleImageView pimage;
+        private TextView last_message;
+        private ImageView img_on;
+        private ImageView img_off;
+
+
+
+
 
         public ViewHolder(View itemView){
             super(itemView);
 
-
             username= itemView.findViewById(R.id.nombre_producto_mensaje);
             pname=itemView.findViewById(R.id.nombre_producto_mensaje_2);
             pimage=itemView.findViewById(R.id.product_image_new_mensaje);
+            last_message=itemView.findViewById(R.id.last_meesage);
+            img_on=itemView.findViewById(R.id.img_on);
+            img_off=itemView.findViewById(R.id.img_off);
 
 
         }
 
     }
+    private void lastMessage(final String userid, final TextView last_message){
+        theLasMessage="default";
+        final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        DatabaseReference reference= FirebaseDatabase.getInstance().getReference("Messages");
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Messages messages = snapshot.getValue(Messages.class);
+                    if (messages.getPara().equals(firebaseUser.getUid()) && messages.getFrom().equals(userid) ||
+                            messages.getPara().equals(userid) && messages.getFrom().equals(firebaseUser.getUid()))
+                    {
+                        theLasMessage=messages.getMessage();
 
-    private void nombre_producto(final String userid, final TextView pname)
+                    }
+
+                }
+                switch (theLasMessage){
+                    case"default":
+                        last_message.setText("Sin mensaje");
+                        break;
+                        default:
+                            last_message.setText(theLasMessage);
+                            break;
+                }
+                theLasMessage="default";
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+    }
+
+    private void nombre_producto(final String userid, final TextView pname, final CircleImageView pimage)
     {
 
         final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         final DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Messages");
-        reference.addValueEventListener(new ValueEventListener()
-        {
+        Query query = reference.orderByChild("pname");
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot:dataSnapshot.getChildren())
+                for (DataSnapshot snapshot : dataSnapshot.getChildren())
                 {
                     Messages messages = snapshot.getValue(Messages.class);
 
-                    if(messages.getPara().equals(firebaseUser.getUid())&& messages.getFrom().equals(userid)||
-                            messages.getPara().equals(userid)&& messages.getFrom().equals(firebaseUser.getUid())){
+                    if (messages.getPara().equals(firebaseUser.getUid()) && messages.getFrom().equals(userid) ||
+                            messages.getPara().equals(userid) && messages.getFrom().equals(firebaseUser.getUid()))
+                    {
                         pname.setText(messages.getPname());
-                        //Picasso.get().load(messages.getPimage()).placeholder(R.drawable.nini).into(pimage);
-                  }
+
+                        /*
+
+                        SharedPreferences sharedPreferences = mContext.getSharedPreferences("nombre", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString("pimage",messages.getPimage());
+                        editor.clear();
+                        editor.commit();
+
+                         */
+
+
+
+                        Picasso.get().load(messages.getPimage()).placeholder(R.drawable.nini).into(pimage);
+
+
+                    }
+
                 }
 
             }
@@ -132,6 +227,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
             }
         });
+
     }
 
 

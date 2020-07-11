@@ -3,12 +3,13 @@ package com.Marche;
 public class Messages
 {
     public String data, time, type, message, from, para, pname,pimage;
+    private boolean visto;
 
     public Messages(){
 
     }
 
-    public Messages(String data, String time, String type, String message, String from,String para, String pimage) {
+    public Messages(String data, String time, String type, String message, String from,String para, String pimage,boolean visto ) {
         this.pimage=pimage;
         this.pname=pname;
         this.data = data;
@@ -17,6 +18,15 @@ public class Messages
         this.type = type;
         this.message = message;
         this.from = from;
+        this.visto = visto;
+    }
+
+    public boolean isVisto() {
+        return visto;
+    }
+
+    public void setVisto(boolean visto) {
+        this.visto = visto;
     }
 
     public String getPimage() {
