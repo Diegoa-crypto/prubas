@@ -2,40 +2,30 @@ package com.Marche;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.res.FontResourcesParserCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.Marche.Notificaciones.APIService;
-import com.Marche.Notificaciones.Cliente;
-import com.Marche.Notificaciones.Datos;
-import com.Marche.Notificaciones.MyRespuesta;
+import com.Marche.Notificaciones.Client;
+import com.Marche.Notificaciones.Data;
+import com.Marche.Notificaciones.MyResponse;
 import com.Marche.Notificaciones.Sender;
 import com.Marche.Notificaciones.Token;
-import com.Marche.Perfil.Products;
 import com.Marche.Perfil.Usuarios;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -49,12 +39,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.squareup.picasso.Picasso;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import retrofit2.Call;
@@ -162,7 +149,7 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
         seendMessage(messageReceicverID);
-        apiService= Cliente.getCliente("https://fcm.googleapis.com/").create(APIService.class);
+        apiService= Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
 
 
 
@@ -251,10 +238,11 @@ public class ChatActivity extends AppCompatActivity {
         fStore.collection("Usuarios").document(fuser.getUid()).addSnapshotListener(new EventListener<DocumentSnapshot>()
         {
             @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e)
+            {
                 Usuarios usuarios = documentSnapshot.toObject(Usuarios.class);
                 if(notify) {
-                    sendNotification(para, usuarios.getfName(), msg);
+                    sendNotification(messageReceicverID, usuarios.getfName(), msg);
                 }
                 notify=false;
             }
@@ -266,7 +254,7 @@ public class ChatActivity extends AppCompatActivity {
         editor.apply();
     }
     private void status(String status) {
-        Doc = fStore.collection("Users").document(fuser.getUid());
+        Doc = fStore.collection("Usuarios").document(fuser.getUid());
 
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("status", status);
@@ -282,13 +270,13 @@ public class ChatActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot snapshot: dataSnapshot.getChildren()){
                     Token token=snapshot.getValue(Token.class);
-                    Datos datos=new Datos(fuser.getUid(),R.drawable.logo_peque,username+": "+message, "Nuevo Mensaje",messageReceicverID);
+                    Data data =new Data(fuser.getUid(),R.drawable.logo_peque,username+": "+message, "Nuevo Mensaje",messageReceicverID);
 
-                    Sender sender=new Sender(datos, token.getToken());
+                    Sender sender=new Sender(data, token.getToken());
                     apiService.sendNotification(sender)
-                            .enqueue(new Callback<MyRespuesta>() {
+                            .enqueue(new Callback<MyResponse>() {
                                 @Override
-                                public void onResponse(Call<MyRespuesta> call, Response<MyRespuesta> response) {
+                                public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
                                     if(response.code()==200){
                                         if(response.body().success!=1){
                                             Toast.makeText(ChatActivity.this, "!Fallo¡", Toast.LENGTH_SHORT).show();
@@ -297,7 +285,7 @@ public class ChatActivity extends AppCompatActivity {
                                 }
 
                                 @Override
-                                public void onFailure(Call<MyRespuesta> call, Throwable t) {
+                                public void onFailure(Call<MyResponse> call, Throwable t) {
 
                                 }
                             });

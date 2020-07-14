@@ -17,6 +17,7 @@ import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
 import com.Marche.ChatActivity;
+import com.Marche.Nuevo_mensaje_Activity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -33,7 +34,7 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
         super.onNewToken(s);
 
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        String refreshToken = FirebaseInstanceId.getInstance().getToken();
+        String refreshToken = FirebaseInstanceId.getInstance().getInstanceId().getResult().getToken();
 
         if (firebaseUser != null) {
             updateToken(refreshToken);
@@ -52,6 +53,8 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
 
+        Map<String, String> data_notify = remoteMessage.getData();
+
         //String sented=remoteMessage.getData().get("sented");
         String user = remoteMessage.getData().get("user");
 
@@ -59,7 +62,7 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
         String currentUser = preferences.getString("currentuser", "none");
 
         FirebaseUser firebaseUser= FirebaseAuth.getInstance().getCurrentUser();
-        Map<String, String> data_notify = remoteMessage.getData();
+
 
 
         if (firebaseUser != null && data_notify.size() > 0)
@@ -78,6 +81,7 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void sendOreoNotification(RemoteMessage remoteMessage){
         String user = remoteMessage.getData().get("user");
         String icon = remoteMessage.getData().get("icon");
@@ -86,13 +90,16 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
 
         RemoteMessage.Notification notification=remoteMessage.getNotification();
         int j = Integer.parseInt(user.replaceAll("[\\D]", ""));
-        Intent intent = new Intent(this, ChatActivity.class);
+
+        Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
+
         Bundle bundle=new Bundle();
         bundle.putString("userid", user);
         intent.putExtras(bundle);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-        PendingIntent pendingIntent=PendingIntent.getActivity(this, j,intent,PendingIntent.FLAG_ONE_SHOT);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        PendingIntent pendingIntent=PendingIntent.getActivity(this, j,intent,PendingIntent.FLAG_UPDATE_CURRENT);
 
         Uri defaultSound= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
@@ -115,16 +122,17 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
 
         RemoteMessage.Notification notification=remoteMessage.getNotification();
 
-        assert user != null;
         int j = Integer.parseInt(user.replaceAll("[\\D]", ""));
-        Intent intent = new Intent(this, ChatActivity.class);
+
+        Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
         Bundle bundle=new Bundle();
         bundle.putString("userid", user);
         intent.putExtras(bundle);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent=PendingIntent.getActivity(this, j,intent,PendingIntent.FLAG_ONE_SHOT);
+        PendingIntent pendingIntent=PendingIntent.getActivity(this,j,intent,PendingIntent.FLAG_ONE_SHOT);
 
         Uri defaultSound= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        assert icon != null;
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                 .setSmallIcon(Integer.parseInt(icon))
                 .setContentTitle(title)

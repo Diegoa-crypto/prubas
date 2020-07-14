@@ -24,7 +24,7 @@ public class OreoNotification extends ContextWrapper {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void createChannel() {
         NotificationChannel channel=new NotificationChannel(CHANNEL_ID,
                 CHANNEL_NAME,
@@ -42,7 +42,7 @@ public class OreoNotification extends ContextWrapper {
         }
         return notificationManager;
     }
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public Notification.Builder getOreoNotification(String title, String body,
                                                     PendingIntent pendingIntent, Uri soundUri, String icon){
         return new Notification.Builder(getApplicationContext(),CHANNEL_ID)

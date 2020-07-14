@@ -1,6 +1,6 @@
 package com.Marche.Notificaciones;
 
-public class MyRespuesta {
+public class MyResponse {
     public int success;
 
 }

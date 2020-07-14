@@ -3,6 +3,7 @@ package com.Marche;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.Marche.Notificaciones.Token;
 import com.Marche.Perfil.Products;
 import com.Marche.ViewHolder.ProductViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -30,6 +31,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.squareup.picasso.Picasso;
 
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -109,10 +111,16 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-
+       // updateToken(FirebaseInstanceId.getInstance().getToken());
 
 
     }
+
+    /*private void updateToken(String token){
+        DatabaseReference reference=FirebaseDatabase.getInstance().getReference("Tokens");
+        Token token1=new Token(token);
+        reference.child(fuser.getUid()).setValue(token1);
+    }*/
 
     @Override
     protected void onStart()
@@ -218,7 +226,7 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
         {
             FirebaseAuth.getInstance().signOut();
             startActivity(new Intent(getApplicationContext(), MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-            //finish();
+            finish();
 
         }
         else if (id == R.id.nav_perfil)
@@ -255,7 +263,7 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
                     Picasso.get().load(documentSnapshot.getString("image")).placeholder(R.drawable.profile).into(profileImageView);
 
                 }else{
-                    Log.d(TAG,"Sin datos");
+                    Log.d(TAG,"Sin data");
                 }
             }
         });

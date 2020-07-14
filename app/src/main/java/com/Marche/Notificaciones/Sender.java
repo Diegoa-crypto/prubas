@@ -1,27 +1,13 @@
 package com.Marche.Notificaciones;
 
 public class Sender {
-    public Datos datos;
+    public Data notification;
     public String to;
 
-    public Sender(Datos datos, String to) {
-        this.datos = datos;
+    public Sender(Data notification, String to) {
+        this.notification = notification;
         this.to = to;
     }
 
-    public Datos getDatos() {
-        return datos;
-    }
 
-    public void setDatos(Datos datos) {
-        this.datos = datos;
-    }
-
-    public String getTo() {
-        return to;
-    }
-
-    public void setTo(String to) {
-        this.to = to;
-    }
 }

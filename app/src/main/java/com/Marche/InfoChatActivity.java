@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -16,9 +15,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.Marche.Notificaciones.APIService;
-import com.Marche.Notificaciones.Cliente;
-import com.Marche.Notificaciones.Datos;
-import com.Marche.Notificaciones.MyRespuesta;
+import com.Marche.Notificaciones.Client;
+import com.Marche.Notificaciones.Data;
+import com.Marche.Notificaciones.MyResponse;
 import com.Marche.Notificaciones.Sender;
 import com.Marche.Notificaciones.Token;
 import com.Marche.Perfil.Products;
@@ -39,13 +38,10 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -111,7 +107,7 @@ public class InfoChatActivity extends AppCompatActivity {
 
         seendMessage(PostKey);
 
-        apiService= Cliente.getCliente("https://fcm.googleapis.com/").create(APIService.class);
+        apiService= Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
 
         userInfoDisplay(fullNameEditText, userPhoneEditText, adressEditText);
 
@@ -212,6 +208,28 @@ public class InfoChatActivity extends AppCompatActivity {
             hashMap.put("type", "text");
             hashMap.put("from", fuser.getUid());
             hashMap.put("para", PostKey);
+            user_message_key.child("Messages").push().setValue(hashMap).addOnCompleteListener(new OnCompleteListener()
+            {
+                @Override
+                public void onComplete(@NonNull Task task)
+                {
+                    if(task.isSuccessful()){
+
+                        Toast.makeText(InfoChatActivity.this, "Mensaje enviado correctamente", Toast.LENGTH_SHORT).show();
+                        userMessageInput.setText("");
+                        startActivity(new Intent(InfoChatActivity.this, MenuActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+
+                    }
+                    else{
+                        String message=task.getException().getMessage();
+                        Toast.makeText(InfoChatActivity.this, "Error:  "+message, Toast.LENGTH_SHORT).show();
+                        userMessageInput.setText("");
+                        startActivity(new Intent(InfoChatActivity.this, MenuActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                    }
+
+
+                }
+            });
 
             final DatabaseReference chatRef=FirebaseDatabase.getInstance().getReference("Chatlist")
                     .child(PostKey)
@@ -231,18 +249,19 @@ public class InfoChatActivity extends AppCompatActivity {
                 }
             });
             final String msg=messageText;
-            fStore.collection("Usuarios").document(fuser.getUid())
-                    .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            fStore.collection("Usuarios").document(fuser.getUid()).addSnapshotListener(new EventListener<DocumentSnapshot>()
+            {
                 @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e)
+                {
                     Usuarios usuarios = documentSnapshot.toObject(Usuarios.class);
                     if(notify) {
                         sendNotification(PostKey, usuarios.getfName(), msg);
                     }
                     notify=false;
-
                 }
             });
+
                     /*
                     .addSnapshotListener(new EventListener<DocumentSnapshot>()
             {
@@ -259,28 +278,9 @@ public class InfoChatActivity extends AppCompatActivity {
             });
             */
 
-            user_message_key.child("Messages").push().setValue(hashMap)
-                    .addOnCompleteListener(new OnCompleteListener()
-            {
-                @Override
-                public void onComplete(@NonNull Task task)
-                {
-                    if(task.isSuccessful()){
-                        Toast.makeText(InfoChatActivity.this, "Mensaje enviado correctamente", Toast.LENGTH_SHORT).show();
-                        userMessageInput.setText("");
-                        startActivity(new Intent(InfoChatActivity.this, MenuActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-
-                    }
-                    else{
-                        String message=task.getException().getMessage();
-                        Toast.makeText(InfoChatActivity.this, "Error:  "+message, Toast.LENGTH_SHORT).show();
-                        userMessageInput.setText("");
-                        startActivity(new Intent(InfoChatActivity.this, MenuActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-                    }
 
 
-                }
-            });
+
         }
     }
     private void currentUser(String userId) {
@@ -289,7 +289,7 @@ public class InfoChatActivity extends AppCompatActivity {
         editor.apply();
     }
     private void status(String status) {
-        Doc = fStore.collection("Users").document(fuser.getUid());
+        Doc = fStore.collection("Usuarios").document(fuser.getUid());
 
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("status", status);
@@ -306,13 +306,13 @@ public class InfoChatActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot snapshot: dataSnapshot.getChildren()){
                     Token token=snapshot.getValue(Token.class);
-                    Datos datos=new Datos(fuser.getUid(),R.drawable.logo_peque,username+": "+message, "Nuevo Mensaje",messageReceicverID);
+                    Data data =new Data(fuser.getUid(),R.drawable.logo_peque,username+": "+message, "Nuevo Mensaje",PostKey);
 
-                    Sender sender=new Sender(datos, token.getToken());
+                    Sender sender=new Sender(data, token.getToken());
                     apiService.sendNotification(sender)
-                            .enqueue(new Callback<MyRespuesta>() {
+                            .enqueue(new Callback<MyResponse>() {
                                 @Override
-                                public void onResponse(Call<MyRespuesta> call, Response<MyRespuesta> response) {
+                                public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
                                     if(response.code()==200){
                                         if(response.body().success!=1){
                                             Toast.makeText(InfoChatActivity.this, "!Fallo¡", Toast.LENGTH_SHORT).show();
@@ -321,7 +321,7 @@ public class InfoChatActivity extends AppCompatActivity {
                                 }
 
                                 @Override
-                                public void onFailure(Call<MyRespuesta> call, Throwable t) {
+                                public void onFailure(Call<MyResponse> call, Throwable t) {
 
                                 }
                             });
