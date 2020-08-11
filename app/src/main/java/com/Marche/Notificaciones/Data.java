@@ -1,13 +1,15 @@
 package com.Marche.Notificaciones;
 
 public class Data {
+    private String click_action;
     private String user;
     private int icon;
     private String body;
     private String title;
     private String sented;
 
-    public Data(String user, int icon, String body, String title, String sented) {
+    public Data(String user, int icon, String body, String title, String sented,String click_action) {
+        this.click_action = click_action;
         this.user = user;
         this.icon = icon;
         this.body = body;
@@ -16,6 +18,14 @@ public class Data {
     }
 
     public Data() {
+    }
+
+    public String getClick_action() {
+        return click_action;
+    }
+
+    public void setClick_action(String click_action) {
+        this.click_action = click_action;
     }
 
     public String getUser() {

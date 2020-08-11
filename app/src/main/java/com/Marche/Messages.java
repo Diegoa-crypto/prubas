@@ -2,15 +2,17 @@ package com.Marche;
 
 public class Messages
 {
-    public String data, time, type, message, from, para, pname,pimage;
+    public String data, time, type, message, from, para, pname,pimage,pprice, deleted;
     private boolean visto;
 
     public Messages(){
 
     }
 
-    public Messages(String data, String time, String type, String message, String from,String para, String pimage,boolean visto ) {
+    public Messages(String data, String time, String type, String message, String from,String para, String pimage,String pprice, boolean visto, String deleted ) {
         this.pimage=pimage;
+        this.deleted=deleted;
+        this.pprice=pprice;
         this.pname=pname;
         this.data = data;
         this.para = para;
@@ -19,6 +21,22 @@ public class Messages
         this.message = message;
         this.from = from;
         this.visto = visto;
+    }
+
+    public String getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(String deleted) {
+        this.deleted = deleted;
+    }
+
+    public String getPprice() {
+        return pprice;
+    }
+
+    public void setPprice(String pprice) {
+        this.pprice = pprice;
     }
 
     public boolean isVisto() {

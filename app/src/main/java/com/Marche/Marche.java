@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -12,10 +13,14 @@ import com.Marche.Fragmentos.InstruccionesActivity;
 public class Marche extends AppCompatActivity {
 
 
+    private static final String TAG ="info" ;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_marche);
+
+
 
         new Handler().postDelayed(new Runnable() {
             @Override

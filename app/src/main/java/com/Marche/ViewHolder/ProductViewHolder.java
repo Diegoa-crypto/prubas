@@ -1,6 +1,7 @@
 package com.Marche.ViewHolder;
 
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,6 +16,7 @@ public class ProductViewHolder extends RecyclerView.ViewHolder implements View.O
     public TextView txtproductName, txtProductDescription, txtProductPrice;
     public ImageView imageView;
     public ItemClickListner listner;
+    public ImageButton moreBoton;
 
     public ProductViewHolder(View itemView) {
         super(itemView);
@@ -23,6 +25,7 @@ public class ProductViewHolder extends RecyclerView.ViewHolder implements View.O
         txtproductName = (TextView) itemView.findViewById(R.id.product_name);
         txtProductDescription = (TextView) itemView.findViewById(R.id.product_description);
         txtProductPrice = (TextView) itemView.findViewById(R.id.product_price);
+        moreBoton=(ImageButton) itemView.findViewById(R.id.moreBoton);
 
     }
     public void setItemClickListner (ItemClickListner listner)

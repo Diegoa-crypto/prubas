@@ -54,7 +54,7 @@ public class InfoChatActivity extends AppCompatActivity {
     private String messageReceicverID,PostKey;
     private FirebaseAuth mAuth;
     private DocumentReference Doc;
-    private String pname, pimage;
+    private String pname, pimage, pprice;
     private SharedPreferences sharedPreferences;
 
 
@@ -63,6 +63,7 @@ public class InfoChatActivity extends AppCompatActivity {
     private String saveCurrentDate, saveCurrentTime;
     FirebaseUser fuser;
     APIService apiService;
+    Intent intent;
 
     ValueEventListener seenListener;
 
@@ -99,9 +100,10 @@ public class InfoChatActivity extends AppCompatActivity {
 
             }
         });
+        intent = getIntent();
 
 
-        PostKey=getIntent().getExtras().get("user_id").toString();
+        PostKey=intent.getStringExtra("userid");
         messageReceicverID=getIntent().getExtras().get("porst_key").toString();
         fStore = FirebaseFirestore.getInstance();
 
@@ -126,6 +128,7 @@ public class InfoChatActivity extends AppCompatActivity {
                     precio_producto.setText(products.getPrice());
                     pname=products.getPname();
                     pimage=products.getImage();
+                    pprice=products.getPrice();
 /*
                     sharedPreferences = getSharedPreferences("nombre", Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -200,6 +203,7 @@ public class InfoChatActivity extends AppCompatActivity {
 
             HashMap<String, Object> hashMap= new HashMap<>();
             hashMap.put("pname",pname);
+            hashMap.put("pprice",pprice);
             hashMap.put("visto", false);
             hashMap.put("pimage",pimage);
             hashMap.put("message", messageText);
@@ -208,6 +212,7 @@ public class InfoChatActivity extends AppCompatActivity {
             hashMap.put("type", "text");
             hashMap.put("from", fuser.getUid());
             hashMap.put("para", PostKey);
+           // hashMap.put("deleted", "");
             user_message_key.child("Messages").push().setValue(hashMap).addOnCompleteListener(new OnCompleteListener()
             {
                 @Override
@@ -240,6 +245,7 @@ public class InfoChatActivity extends AppCompatActivity {
                 {
                     if(!dataSnapshot.exists()){
                         chatRef.child("id").setValue(fuser.getUid());
+                        chatRef.child("deleted").setValue("");
                     }
                 }
 
@@ -252,13 +258,14 @@ public class InfoChatActivity extends AppCompatActivity {
             fStore.collection("Usuarios").document(fuser.getUid()).addSnapshotListener(new EventListener<DocumentSnapshot>()
             {
                 @Override
-                public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e)
-                {
-                    Usuarios usuarios = documentSnapshot.toObject(Usuarios.class);
-                    if(notify) {
-                        sendNotification(PostKey, usuarios.getfName(), msg);
+                public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                    if (documentSnapshot != null){
+                        Usuarios usuarios = documentSnapshot.toObject(Usuarios.class);
+                        if (notify) {
+                            sendNotification(PostKey, usuarios.getfName(), msg);
+                        }
+                        notify = false;
                     }
-                    notify=false;
                 }
             });
 
@@ -299,6 +306,7 @@ public class InfoChatActivity extends AppCompatActivity {
 
     private void sendNotification(String receiver, final String username, final String message)
     {
+        final String click_action = "NOTIFICATIONACTIVITY";
         DatabaseReference tokens=FirebaseDatabase.getInstance().getReference("Tokens");
         Query query=tokens.orderByKey().equalTo(receiver);
         query.addValueEventListener(new ValueEventListener() {
@@ -306,7 +314,8 @@ public class InfoChatActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot snapshot: dataSnapshot.getChildren()){
                     Token token=snapshot.getValue(Token.class);
-                    Data data =new Data(fuser.getUid(),R.drawable.logo_peque,username+": "+message, "Nuevo Mensaje",PostKey);
+                    Data data =new Data(fuser.getUid(),R.drawable.logo_peque,
+                            username+": "+message, "Nuevo Mensaje",PostKey,click_action);
 
                     Sender sender=new Sender(data, token.getToken());
                     apiService.sendNotification(sender)

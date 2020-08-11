@@ -35,8 +35,8 @@
     <string name="action_settings">Settings</string>
     <string name="user_name">Nombre de usuario</string>
 
-    <string name="menu_home">Historial</string>
-    <string name="menu_gallery">Categorias</string>
+    <string name="menu_home">Inicio</string>
+    <string name="menu_gallery">Mis publicaciones</string>
     <string name="menu_slideshow">Configuracion</string>
     <string name="menu_tools">Salir</string>
     <string name="menu_share">Share</string>
@@ -57,4 +57,6 @@
     <string name="mensajes_in">Mensajes</string>
     <string name="esxribe_coment">Escribe un comentario aqui...</string>
     <string name="ultimo_mensaje">Ultimo mensaje</string>
+    <string name="Configuracion">Configuracion</string>
+    <string name="Informacion">Informacion</string>
 </resources>

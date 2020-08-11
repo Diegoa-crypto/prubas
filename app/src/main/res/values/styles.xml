@@ -20,12 +20,16 @@
     <style name="CustomPD" parent="android:Theme.DeviceDefault.Dialog">
         <item name="DialogTitleAppearance">@android:style/TextAppearance.Medium</item>
         <item name="DialogTitleText">Iniciando...</item>
-        <item name="DialogSpotColor">@android:color/holo_orange_dark</item>
+        <item name="DialogSpotColor">@color/colorPrimaryDark</item>
         <item name="DialogSpotCount">6</item>
     </style>
 
     <style name="MenuStyle" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="android:background">#ffffff</item>
+    </style>
+
+    <style name="MyDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorPrimary">@color/black</item>
     </style>
 
 </resources>

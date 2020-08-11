@@ -1,16 +1,20 @@
 package com.Marche;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.navigation.NavigationView;
@@ -86,9 +90,10 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 
 
     @Override
-    public void onBindViewHolder(@NonNull MessagesAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull MessagesAdapter.ViewHolder holder, final int position) {
         Messages messages=mMensaje.get(position);
         holder.show_message.setText(messages.getMessage());
+
         if(position==mMensaje.size()-1){
             if(messages.isVisto()){
                 holder.txt_seen.setText("Visto");
@@ -101,17 +106,20 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
     }
 
 
-
     public class ViewHolder extends RecyclerView.ViewHolder
     {
 
         public TextView show_message;
         public TextView txt_seen;
+        RelativeLayout messageRelative;
+
 
         public ViewHolder(View itemView){
             super(itemView);
             show_message=itemView.findViewById(R.id.show_messages);
             txt_seen=itemView.findViewById(R.id.txt_seen);
+            messageRelative=itemView.findViewById(R.id.messageLayout);
+
 
 
         }

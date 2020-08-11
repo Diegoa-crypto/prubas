@@ -5,9 +5,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import com.Marche.Notificaciones.Token;
 import com.Marche.Perfil.Chatlist;
@@ -61,10 +63,19 @@ public class Nuevo_mensaje_Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_newmendaje);
 
+
+
         androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Mensajes");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(Nuevo_mensaje_Activity.this,MenuActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                finish();//agregeu este finishporque se colgaba la aplicacion
+            }
+        });
 
 
         recyclerView_nuevo_mensjae = findViewById(R.id.recycler_new_mensaje);
@@ -88,6 +99,12 @@ public class Nuevo_mensaje_Activity extends AppCompatActivity {
                 usuariosList.clear();
                 for(DataSnapshot snapshot:dataSnapshot.getChildren()) {
                     Chatlist chatlist =snapshot.getValue(Chatlist.class);
+                    if(chatlist.getDeleted().equals(fuser.getUid())){
+                        usuariosList.clear();
+                    }
+                    if(chatlist.getDeleted().length()>0){
+                        snapshot.getRef().removeValue();
+                    }
                     usuariosList.add(chatlist);
                 }
                 chatList();

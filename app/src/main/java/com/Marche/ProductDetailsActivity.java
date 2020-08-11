@@ -139,7 +139,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
                         }if(which==1){
 
                         Intent chatintent = new Intent(ProductDetailsActivity.this, InfoChatActivity.class);
-                        chatintent.putExtra("user_id",user_id);
+                        chatintent.putExtra("userid",user_id);
                         chatintent.putExtra("porst_key",porst_key);
                         chatintent.putExtra("userName", user_name);
                         chatintent.putExtra("pname", pname);

@@ -8,6 +8,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -55,7 +56,7 @@ public class ChatActivity extends AppCompatActivity {
     private ImageButton SendMessageButton;
     private EditText userMessageInput;
 
-    private String messageReceicverID, messageReceiverImage, messageSenderID;
+    private String messageReceicverID, messageReceiverpname, messageSenderID, pprice_mensaje, pimage_mensaje;
     private DatabaseReference RootRef;
     private DocumentReference Doc;
     private String saveCurrentDate, saveCurrentTime;
@@ -66,9 +67,9 @@ public class ChatActivity extends AppCompatActivity {
 
     private LinearLayoutManager linearLayoutManager;
     private MessagesAdapter messageAdapter;
-    private TextView username;
+    private TextView username,pname_mensaje, price_product;
     FirebaseUser fuser;
-    private CircleImageView receiverProfileImage;
+    private CircleImageView receiverProductImage;
     private SharedPreferences sharedPreferences;
 
 
@@ -85,12 +86,22 @@ public class ChatActivity extends AppCompatActivity {
 
     APIService apiService;
 
+    SharedPreferences sharedPref;
+
     boolean notify=false;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
+        /*
+        if (getIntent() != null) {
+            Bundle dataBundle = getIntent().getExtras();
+            // dataBundle contains the notification data payload
+            Intent intent  = new Intent(this, ChatActivity.class);
+            intent.putExtra("userid",dataBundle);
+            startActivity(intent);
+        }*/
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
@@ -98,12 +109,12 @@ public class ChatActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-
+        //quite un setdsplayshow
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(ChatActivity.this,Nuevo_mensaje_Activity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                finish();//agregeu este finishporque se colgaba la aplicacion
             }
         });
 
@@ -118,7 +129,9 @@ public class ChatActivity extends AppCompatActivity {
         SendMessageButton=(ImageButton) findViewById(R.id.send_menssage_button);
         // SendImagefileButton=(ImageButton) findViewById(R.id.send_image_file_button);
         userMessageInput = (EditText) findViewById(R.id.input_message);
-        receiverProfileImage=(CircleImageView) findViewById(R.id.profile_image);
+        pname_mensaje=(TextView) findViewById(R.id.nombre_producto_info_mensage);
+        price_product=(TextView) findViewById(R.id.precio_producto_info_mensage);
+        receiverProductImage=(CircleImageView) findViewById(R.id.product_mensajes);
 
         RootRef= FirebaseDatabase.getInstance().getReference();
 
@@ -133,7 +146,22 @@ public class ChatActivity extends AppCompatActivity {
         intent = getIntent();
 
         messageReceicverID=intent.getStringExtra("userid");
+        messageReceiverpname=intent.getStringExtra("pname_mesage");
+        pprice_mensaje=intent.getStringExtra("pprice_mensaje");
+        pimage_mensaje=intent.getStringExtra("pimage_mensaje");
 
+        sharedPref = getSharedPreferences("myPref", MODE_PRIVATE);
+        sharedPref.edit().putString("pname_id", messageReceiverpname).commit();
+        sharedPref.edit().putString("pprice", pprice_mensaje).commit();
+        sharedPref.edit().putString("ppimage", pimage_mensaje).commit();
+
+        String pimage = sharedPref.getString("ppimage", "nada");
+        String pprice = sharedPref.getString("pprice", "nada");
+        String userId = sharedPref.getString("pname_id", "nada");
+
+        Picasso.get().load(pimage).placeholder(R.drawable.nini).into(receiverProductImage);
+        price_product.setText(pprice);
+        pname_mensaje.setText(userId);
         //messageReceiverName=getIntent().getExtras().get("userName").toString();
 
         fStore.collection("Usuarios").document(messageReceicverID).addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -143,7 +171,6 @@ public class ChatActivity extends AppCompatActivity {
                     String name = documentSnapshot.getString("fName");
                     String uimage= documentSnapshot.getString("image");
                     username.setText(name);
-                    Picasso.get().load(uimage).placeholder(R.drawable.nini).into(receiverProfileImage);
                 }
 
             }
@@ -173,6 +200,7 @@ public class ChatActivity extends AppCompatActivity {
 
             }
         });
+
         readMessage(fuser.getUid(),messageReceicverID);
 
 
@@ -213,6 +241,7 @@ public class ChatActivity extends AppCompatActivity {
         hashMap.put("type", "text");
         hashMap.put("from", from);
         hashMap.put("para", para);
+        //hashMap.put("deleted", "");
 
 
         reference.child("Messages").push().setValue(hashMap);
@@ -226,6 +255,7 @@ public class ChatActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(!dataSnapshot.exists()){
                     chatRef.child("id").setValue(fuser.getUid());
+                    chatRef.child("deleted").setValue("");
                 }
             }
 
@@ -240,11 +270,14 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e)
             {
-                Usuarios usuarios = documentSnapshot.toObject(Usuarios.class);
-                if(notify) {
-                    sendNotification(messageReceicverID, usuarios.getfName(), msg);
+                if (documentSnapshot != null)
+                {
+                    Usuarios usuarios = documentSnapshot.toObject(Usuarios.class);
+                    if(notify) {
+                        sendNotification(messageReceicverID, usuarios.getfName(), msg);
+                    }
+                    notify=false;
                 }
-                notify=false;
             }
         });
     }
@@ -263,6 +296,7 @@ public class ChatActivity extends AppCompatActivity {
     }
     private void sendNotification(String receiver, final String username, final String message)
     {
+        final String click_action = "NOTIFICATIONACTIVITY";
         DatabaseReference tokens=FirebaseDatabase.getInstance().getReference("Tokens");
         Query query=tokens.orderByKey().equalTo(receiver);
         query.addValueEventListener(new ValueEventListener() {
@@ -270,7 +304,8 @@ public class ChatActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot snapshot: dataSnapshot.getChildren()){
                     Token token=snapshot.getValue(Token.class);
-                    Data data =new Data(fuser.getUid(),R.drawable.logo_peque,username+": "+message, "Nuevo Mensaje",messageReceicverID);
+                    Data data =new Data(fuser.getUid(),R.drawable.logo_peque,username+": "+
+                            message, "Nuevo Mensaje",messageReceicverID,click_action);
 
                     Sender sender=new Sender(data, token.getToken());
                     apiService.sendNotification(sender)
@@ -312,8 +347,18 @@ public class ChatActivity extends AppCompatActivity {
                 mMensaje.clear();
                 for(DataSnapshot snapshot:dataSnapshot.getChildren()){
                     Messages messages=snapshot.getValue(Messages.class);
+
                     if(messages.getPara().equals(myid) && messages.getFrom().equals(userid)||
                         messages.getPara().equals(userid) && messages.getFrom().equals(myid)){
+
+                        /*if (messages.getDeleted().equals(myid)) {
+                            mMensaje.clear();
+                        }
+                        if (messages.getDeleted().length() > 0) {
+                            snapshot.getRef().removeValue();
+
+                        }*/
+
                         mMensaje.add(messages);
                     }
                     messageAdapter=new MessagesAdapter(ChatActivity.this,mMensaje);

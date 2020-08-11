@@ -11,12 +11,15 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.TaskStackBuilder;
 
 import com.Marche.ChatActivity;
+import com.Marche.MenuActivity;
 import com.Marche.Nuevo_mensaje_Activity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -29,6 +32,8 @@ import com.google.firebase.messaging.RemoteMessage;
 import java.util.Map;
 
 public class MyFirebaseMessaging extends FirebaseMessagingService {
+    private static final String TAG = "FirebaseIntent";
+
     @Override
     public void onNewToken(@NonNull String s) {
         super.onNewToken(s);
@@ -53,17 +58,23 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
 
+
         Map<String, String> data_notify = remoteMessage.getData();
 
         //String sented=remoteMessage.getData().get("sented");
         String user = remoteMessage.getData().get("user");
+        Log.d(TAG, "Message data payload: " + user);
 
         SharedPreferences preferences  = getSharedPreferences("PREFS", MODE_PRIVATE);
         String currentUser = preferences.getString("currentuser", "none");
 
         FirebaseUser firebaseUser= FirebaseAuth.getInstance().getCurrentUser();
+        //String click_action = "NOTIFICATIONACTIVITY";
 
+        /*if (remoteMessage.getNotification() != null) {
+            click_action = remoteMessage.getNotification().getClickAction(); //get click_action
 
+        }*/
 
         if (firebaseUser != null && data_notify.size() > 0)
         {
@@ -81,6 +92,7 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
     }
 
 
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void sendOreoNotification(RemoteMessage remoteMessage){
         String user = remoteMessage.getData().get("user");
@@ -88,18 +100,21 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
         String title = remoteMessage.getData().get("title");
         String body = remoteMessage.getData().get("body");
 
+
         RemoteMessage.Notification notification=remoteMessage.getNotification();
         int j = Integer.parseInt(user.replaceAll("[\\D]", ""));
 
-        Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
+
+
+        Intent intent = new Intent(this,Nuevo_mensaje_Activity.class);
 
         Bundle bundle=new Bundle();
         bundle.putString("userid", user);
         intent.putExtras(bundle);
-
+        Log.d(TAG, "Message data payload: " + user);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-        PendingIntent pendingIntent=PendingIntent.getActivity(this, j,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent=PendingIntent.getActivity(this, j,intent,PendingIntent.FLAG_ONE_SHOT);
 
         Uri defaultSound= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
@@ -124,15 +139,19 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
 
         int j = Integer.parseInt(user.replaceAll("[\\D]", ""));
 
-        Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
+
+        Intent intent = new Intent(this,Nuevo_mensaje_Activity.class);
         Bundle bundle=new Bundle();
         bundle.putString("userid", user);
         intent.putExtras(bundle);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
         PendingIntent pendingIntent=PendingIntent.getActivity(this,j,intent,PendingIntent.FLAG_ONE_SHOT);
 
+        Log.d(TAG,"NEW_INTENT: "+user);
+
         Uri defaultSound= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        assert icon != null;
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                 .setSmallIcon(Integer.parseInt(icon))
                 .setContentTitle(title)

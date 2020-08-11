@@ -1,6 +1,7 @@
 package com.Marche.ViewHolder;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -8,13 +9,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.Marche.ChatActivity;
 import com.Marche.Messages;
+import com.Marche.Perfil.Chatlist;
 import com.Marche.Perfil.Products;
 import com.Marche.Perfil.Usuarios;
 import com.Marche.R;
@@ -26,9 +31,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.squareup.picasso.Picasso;
 
 import java.util.EventListener;
+import java.util.HashMap;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -37,7 +44,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 {
     private Context mContext;
     private List<Usuarios> mUsuarios;
-    private String theLasMessage;
+    private String theLasMessage, pname_mensaje, pprice_mensaje, pimage_mensaje;
     private boolean ischat;
 
 
@@ -57,11 +64,12 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final ProductAdapter.ViewHolder holder, int position)
+    public void onBindViewHolder(@NonNull final ProductAdapter.ViewHolder holder, final int position)
     {
-        Usuarios usuarios = mUsuarios.get(position);
+        final Usuarios usuarios = mUsuarios.get(position);
         final String userid= usuarios.getUserID();
         holder.username.setText(usuarios.getfName());
+
 
         if(ischat){
             lastMessage(usuarios.getUserID(),holder.last_message);
@@ -86,6 +94,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
 
 
+
         //SharedPreferences sharedPreferences = mContext.getSharedPreferences("nombre",mContext.MODE_PRIVATE);
         //final String pimage = sharedPreferences.getString("pimage", "nada");
 
@@ -101,14 +110,69 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, ChatActivity.class);
                 intent.putExtra("userid", userid);
+                intent.putExtra("pname_mesage",pname_mensaje);
+                intent.putExtra("pprice_mensaje",pprice_mensaje);
+                intent.putExtra("pimage_mensaje",pimage_mensaje);
                 mContext.startActivity(intent);
 
+            }
+        });
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener()
+        {
+            @Override
+            public boolean onLongClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(holder.itemView.getContext(),R.style.MyDialogTheme);
+                builder.setPositiveButton("Borrrar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+                        final DatabaseReference userDatabase= FirebaseDatabase.getInstance().getReference("Chatlist").child(firebaseUser.getUid());
+                        userDatabase.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+                            {
+                                for(DataSnapshot snapshot:dataSnapshot.getChildren()) {
+                                    Chatlist chatlist =snapshot.getValue(Chatlist.class);
+                                    if(usuarios.getUserID().equals(chatlist.getId()))
+                                    {
+                                        HashMap<String, Object> result = new HashMap<>();
+                                        result.put("deleted", firebaseUser.getUid());
+                                        snapshot.getRef().updateChildren(result);
+
+
+                                    }
+
+                                }
+
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+                        //Toast.makeText(mContext, "userdatabase", Toast.LENGTH_SHORT).show();
+                        //userDatabase.child(usuarios.getUserID()).setValue(FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+                    }
+                });
+                builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+
+                    }
+                });
+                builder.setTitle("Eliminar conversacion");
+                builder.setMessage("¿Estas seguro de eliminar toda la conversacion?");
+                builder.show();
+                return true;
             }
         });
 
 
     }
-
 
 
     @Override
@@ -125,6 +189,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         private TextView last_message;
         private ImageView img_on;
         private ImageView img_off;
+        //ImageView moreBtn;
+
 
 
 
@@ -139,6 +205,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             last_message=itemView.findViewById(R.id.last_meesage);
             img_on=itemView.findViewById(R.id.img_on);
             img_off=itemView.findViewById(R.id.img_off);
+            //moreBtn= itemView.findViewById(R.id.moreBtn);
+
 
 
         }
@@ -151,7 +219,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren())
+                {
                     Messages messages = snapshot.getValue(Messages.class);
                     if (messages.getPara().equals(firebaseUser.getUid()) && messages.getFrom().equals(userid) ||
                             messages.getPara().equals(userid) && messages.getFrom().equals(firebaseUser.getUid()))
@@ -200,6 +269,10 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
                             messages.getPara().equals(userid) && messages.getFrom().equals(firebaseUser.getUid()))
                     {
                         pname.setText(messages.getPname());
+                        pname_mensaje=messages.getPname();
+                        pprice_mensaje=messages.getPprice();
+                        pimage_mensaje=messages.getPimage();
+
 
                         /*
 
