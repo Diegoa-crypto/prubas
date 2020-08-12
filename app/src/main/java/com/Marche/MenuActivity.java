@@ -275,12 +275,13 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
                     {
                         final String PostKey = getRef(position).getKey();
                         final String pid=model.getPid();
+                        final String userid_product=model.getUserid();
                         final String pimage=model.getImage();
 
                         holder.moreBoton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                showMoreOptions(holder.moreBoton,PostKey,myUid,pid,pimage);
+                                showMoreOptions(holder.moreBoton,userid_product,myUid,pid,pimage);
                             }
                         });
 
@@ -290,7 +291,8 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
                         holder.txtProductPrice.setText("Precio = "+ model.getPrice()+ "$");
                         Picasso.get().load(model.getImage()).into(holder.imageView);
 
-                        holder.itemView.setOnClickListener(new View.OnClickListener() {
+                        holder.itemView.setOnClickListener(new View.OnClickListener()
+                        {
                             @Override
                             public void onClick(View v) {
                                 Intent intent = new Intent(MenuActivity.this, ProductDetailsActivity.class);
@@ -316,20 +318,28 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
-    private void showMoreOptions(ImageButton moreBoton, String postKey, String myUid, final String pid, final String pimage) {
+    private void showMoreOptions(ImageButton moreBoton, String userid_product, String myUid, final String pid, final String pimage) {
         PopupMenu popupMenu=new PopupMenu(MenuActivity.this,moreBoton, Gravity.END);
 
-        if(postKey.equals(myUid)){
-            popupMenu.getMenu().add(Menu.NONE,0,0,"Borrar");
+        if(userid_product.equals(myUid)){
+            popupMenu.getMenu().add(Menu.NONE,0,0,"Vendido");
+            popupMenu.getMenu().add(Menu.NONE,1,0,"Editar");
 
         }
 
-        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener()
+        {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 int id=item.getItemId();
                 if(id==0){
                     beginDelete(pid,pimage);
+
+                }else if(id==1){
+                    Intent intent=new Intent(MenuActivity.this,EditarProductoActivity.class);
+                    intent.putExtra("pid",pid);
+                    startActivity(intent);
+
 
                 }
                 return false;

@@ -18,7 +18,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".Mis_anuncios"></activity>
+        <activity android:name=".EditarProductoActivity"
+            android:parentActivityName=".MenuActivity" />
+        <activity
+            android:name=".Mis_anuncios"
+            android:parentActivityName=".MenuActivity" />
         <activity
             android:name=".Nuevo_mensaje_Activity"
             android:parentActivityName=".MenuActivity">

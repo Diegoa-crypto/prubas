@@ -191,7 +191,7 @@ public class addnewcategoryActivity extends AppCompatActivity {
         SimpleDateFormat currentTime = new SimpleDateFormat("HH:mm:ss");
         saveCurrentTime = currentTime.format(calendar.getTime());
 
-        productRandomKey = fAuth.getCurrentUser().getUid();
+        productRandomKey = saveCurrentDate+saveCurrentTime;
 
 
         final StorageReference filePath = ProductImagesRef.child(ImageUri.getLastPathSegment() + productRandomKey  + ".jpg");
@@ -297,8 +297,28 @@ public class addnewcategoryActivity extends AppCompatActivity {
                     productMap.put("price", Price);
                     productMap.put("pname", Pname);
 
-                    ProductsRef.child(productRandomKey).updateChildren(productMap)
-                            .addOnCompleteListener(new OnCompleteListener<Void>()
+                    ProductsRef.child(productRandomKey).setValue(productMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            //aqui otra vez lo regregasmo al activity de categorias
+                            Intent intent = new Intent(addnewcategoryActivity.this, CategoryActivity.class);
+                            startActivity(intent);
+
+                            loadingBar.dismiss();
+                            Toast.makeText(addnewcategoryActivity.this, "Producto agregado con exito", Toast.LENGTH_SHORT).show();
+                            finish();
+
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            loadingBar.dismiss();
+                            Toast.makeText(addnewcategoryActivity.this, "Error: "+ e.getMessage(), Toast.LENGTH_SHORT).show();
+                            finish();
+
+                        }
+                    });
+                            /*.addOnSuccessListener(new OnCompleteListener<Void>()
                             {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task)
@@ -322,7 +342,7 @@ public class addnewcategoryActivity extends AppCompatActivity {
                                     }
 
                                 }
-                            });
+                            });*/
 
                 }
 

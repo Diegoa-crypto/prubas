@@ -59,4 +59,5 @@
     <string name="ultimo_mensaje">Ultimo mensaje</string>
     <string name="Configuracion">Configuracion</string>
     <string name="Informacion">Informacion</string>
+    <string name="Editar_producto">Realizar cambios</string>
 </resources>
